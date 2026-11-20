@@ -410,7 +410,6 @@ def checked_capture(data_root, candidate):
 def with_recorded_tools(form, tools):
     supplied = form.get("tools")
     if supplied is not None:
-        validate_tools(supplied, public_text)
         for field, value in supplied.items():
             require(value == tools.get(field), "Public tools conflict with the local record; omit tools to inherit it or correct the source")
     return card(dict(form, tools=tools))

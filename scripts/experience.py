@@ -319,6 +319,7 @@ def capture(kind, summary, evidence, data=DATA, *, task_type=None, basis=None, c
 
 
 def project_captures(data, *, candidate=None, task=None, query="", limit=10):
+    from community_tools import tool_terms
     path = Path(data) / "learning/local-recipes.sqlite3"
     if not path.is_file():
         return []
@@ -336,8 +337,12 @@ def project_captures(data, *, candidate=None, task=None, query="", limit=10):
             details = json.loads(encoded)
             if task is not None and details["task"] != task:
                 continue
-            searchable = (summary + " " + details["check"] + " " +
-                          json.dumps(details["tools"], ensure_ascii=False)).casefold()
+            tools = details["tools"]
+            words = [summary, details["check"], *tool_terms(tools)]
+            words.extend(use["purpose"] for use in tools.get("uses", []))
+            if isinstance(tools["software"], list):
+                words.extend(software["version"] for software in tools["software"])
+            searchable = " ".join(words).casefold()
             if all(term in searchable for term in terms):
                 results.append(dict(candidate=key, kind=kind, summary=summary, evidence=evidence, **details))
                 if len(results) == limit:
