@@ -564,7 +564,7 @@
         "software": [
           {
             "name": "Blender",
-            "version": "unknown"
+            "version": "4.5 LTS"
           },
           {
             "name": "Three.js",
