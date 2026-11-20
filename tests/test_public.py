@@ -66,6 +66,31 @@ class PublicPilot(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "new preview"):
             cm.preview_share(db, item, fresh["sha256"])
 
+    def test_automatic_sharing_requires_an_explicit_choice(self):
+        db = self.data / "learning" / "community.sqlite3"
+        item = json.loads((ROOT / "references/community-card.example.json").read_text(encoding="utf8"))
+        path = self.data.parent / "card.json"
+        path.write_bytes(cm.canonical(item))
+        invite = self.run_cli("community_memory.py", "community-sharing", "--begin")
+        self.assertIn("自动分享", invite["question"])
+        self.run_cli("community_memory.py", "community-sharing", "--set", "review")
+        pending = cm.preview_share(db, item, None)
+        self.assertFalse(pending["ready"])
+        self.run_cli("community_memory.py", "community-sharing", "--set", "auto")
+        self.assertFalse(cm.sharing(db, begin=True)["ask_now"])
+        ready = self.run_cli("community_memory.py", "community-share-preview", "--input", str(path))
+        self.assertEqual((ready["choice"], ready["ready"], ready["payload"]), ("auto", True, item))
+        self.assertEqual(ready["destination"], "https://github.com/ieufrrehiug/watch-and-do/issues/new/choose")
+        with self.assertRaises(ValueError):
+            cm.preview_share(db, item, pending["sha256"])
+        with self.assertRaises(ValueError):
+            cm.preview_share(db, dict(item, evidence="C:/Users/Private/file"), None)
+        cm.sharing(db, "review")
+        self.assertFalse(cm.preview_share(db, item, None)["ready"])
+        cm.sharing(db, "private")
+        with self.assertRaisesRegex(ValueError, "Sharing is off"):
+            cm.preview_share(db, item, None)
+
     def test_official_review_binds_real_accounts_content_and_owner_evidence(self):
         item = json.loads((ROOT/"references/community-card.example.json").read_text(encoding="utf8"))
         note = dict(format="watch-and-do.review.v1", card=item, card_sha256=cm.digest(item),
