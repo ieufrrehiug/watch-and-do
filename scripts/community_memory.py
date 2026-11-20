@@ -393,6 +393,27 @@ def check_local(dbfile, item):
             "Card kind or evidence basis does not match the latest checked local result")
     archive = ArchiveLookup(dbfile)
     require(all(archive.resolve(e) for e in entry["evidence"]), "Local evidence is missing or changed")
+    return local_tool_view(entry, local_links(dbfile), digest, public_text)["tools"]
+
+
+def checked_capture(data_root, candidate):
+    from experience import project_captures
+    from scene_archive import file_hash
+    rows = project_captures(data_root, candidate=candidate)
+    require(rows, "No structured project capture with this candidate ID")
+    row = rows[0]
+    evidence = Path(row["evidence"])
+    require(evidence.is_file() and file_hash(evidence) == row["evidence_sha256"], "Local evidence is missing or changed")
+    return row
+
+
+def with_recorded_tools(form, tools):
+    supplied = form.get("tools")
+    if supplied is not None:
+        validate_tools(supplied, public_text)
+        for field, value in supplied.items():
+            require(value == tools.get(field), "Public tools conflict with the local record; omit tools to inherit it or correct the source")
+    return card(dict(form, tools=tools))
 
 
 def main():
@@ -401,7 +422,9 @@ def main():
     commands = cli.add_subparsers(dest="command", required=True)
     draft = commands.add_parser("community-draft", help="Export an explicitly authored public form")
     draft.add_argument("--input", type=Path, required=True)
-    draft.add_argument("--from-scene", action="store_true", help="Check the same local ID without copying private fields")
+    local = draft.add_mutually_exclusive_group()
+    local.add_argument("--from-scene", action="store_true", help="Verify the same personal scene ID and inherit its recorded tools")
+    local.add_argument("--from-capture", metavar="CANDIDATE", help="Verify a personal project capture and inherit its recorded tools")
     review = commands.add_parser("community-review", help="Record an independent attempt on this exact card")
     source = review.add_mutually_exclusive_group(required=True)
     source.add_argument("--card", type=Path)
@@ -417,6 +440,7 @@ def main():
     target.add_argument("--card", type=Path)
     target.add_argument("--installed-id")
     target.add_argument("--scene-id", help="Find a personal scene lesson")
+    target.add_argument("--capture-id", help="Look up a personal project capture")
     target.add_argument("--capability", help="Explore an alternative for a task without an existing card")
     probe.add_argument("--check", help="Local acceptance criterion when using --capability")
     probe.add_argument("--basis", choices=BASES, help="Acceptance basis when using --capability")
@@ -455,10 +479,17 @@ def main():
     db = folder / "community.sqlite3"
     if args.command == "community-draft":
         data = card(read(args.input)[0])
-        require("tools" in data, "New cards need tools: name the software, versions, skills and target capabilities; use none or unknown when applicable")
         if args.from_scene:
             require(data["task"] == "scene", "--from-scene requires a scene card")
-            check_local(folder / "scenes.sqlite3", data)
+            data = with_recorded_tools(data, check_local(folder / "scenes.sqlite3", data))
+        elif args.from_capture:
+            source = checked_capture(folder.parent, args.from_capture)
+            kind = "method" if source["kind"] == "success" else "pitfall"
+            require((data["task"], data["basis"], data["kind"]) == (source["task"], source["basis"], kind),
+                    "Card task, kind or evidence basis does not match the personal project capture")
+            data = with_recorded_tools(data, source["tools"])
+        else:
+            require("tools" in data, "New cards need tools: name the software, versions, skills and target capabilities; use none or unknown when applicable")
         result = export(args.out, data)
     elif args.command == "community-review":
         data = card(read(args.card)[0]) if args.card else installed_card(db, args.installed_id)
@@ -477,6 +508,11 @@ def main():
             provenance = local_tool_view(data, local_links(personal_db), digest, public_text)
             tools = provenance["tools"]
             check, basis = data["check"], data["verification"]
+        elif args.capture_id:
+            source = checked_capture(folder.parent, args.capture_id)
+            tools = source["tools"]
+            provenance = {"tools_source": "personal-record"}
+            check, basis = source["check"], source["basis"]
         elif args.capability:
             require(args.check and args.basis, "--capability needs --check and --basis")
             tools = dict(unknown_tools(), capabilities=[args.capability])

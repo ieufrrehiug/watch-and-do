@@ -5,6 +5,9 @@ elseif ($args.Count -gt 0 -and $args[0] -like '--data=*') { $index = 1 }
 $command = if ($index -lt $args.Count) { $args[$index] }
 if ($command -like 'community-*') {
     & python -X utf8 (Join-Path $PSScriptRoot 'community_memory.py') @args
+} elseif ($command -eq 'find-captures' -or ($command -eq 'capture' -and
+    ($args -match '^--(tools|task-type|basis|check)(=|$)'))) {
+    & python -X utf8 (Join-Path $PSScriptRoot 'experience.py') @args
 } elseif ($command -like 'scene-*') {
     & python -X utf8 (Join-Path $PSScriptRoot 'scene_memory.py') @args
 } else {
