@@ -10,7 +10,7 @@ body:
     id: card
     attributes:
       label: 经验卡
-      description: 粘贴 community-draft 生成的 card.json 内容。在卡中记录实际使用的软件、版本、Skill 和验证依据。
+      description: 粘贴 community-draft 生成的 card.json。列出这次实际使用的软件、版本及 Skill，在 tools.uses 写明每项负责的步骤，并写出怎样验收及实际看到了什么。版本无法核实时填 unknown。
       render: json
     validations:
       required: true
