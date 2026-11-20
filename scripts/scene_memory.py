@@ -11,6 +11,7 @@ import zipfile
 
 from scene_archive import ArchiveLookup, file_hash, preserve
 from memory_paths import default_data
+from community_tools import local_links, local_tool_view, tool_terms, unknown_tools, validate_tools
 
 DEFAULT_DATA = default_data()
 TOPICS = {
@@ -107,6 +108,9 @@ def record(source, base):
         out[field] = indexed_files(strings(source.get(field, []), field, field == "evidence"), base)
     if "source_candidates" in source:
         out["source_candidates"] = sorted(strings(source["source_candidates"], "source_candidates"))
+    if "tools" in source:
+        from community_memory import public_text
+        out["tools"] = validate_tools(source["tools"], public_text)
     return out
 
 
@@ -123,6 +127,15 @@ def learn(dbfile, manifest):
             db.execute("CREATE TABLE IF NOT EXISTS events (revision INTEGER PRIMARY KEY, id TEXT NOT NULL, identity TEXT NOT NULL UNIQUE, details TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)")
             db.execute("BEGIN IMMEDIATE")
             for row in records:
+                # Replaying a pre-tools manifest must still find its original revision.
+                if "tools" not in row:
+                    legacy = json.dumps(row, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+                    old = db.execute("SELECT revision FROM events WHERE identity=?",
+                                     (hashlib.sha256(legacy.encode()).hexdigest(),)).fetchone()
+                    if old:
+                        saved.append({"id": row["id"], "revision": old[0], "result": "unchanged"})
+                        continue
+                    row["tools"] = unknown_tools()
                 encoded = json.dumps(row, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
                 identity = hashlib.sha256(encoded.encode()).hexdigest()
                 existing = db.execute("SELECT revision FROM events WHERE identity=?", (identity,)).fetchone()
@@ -171,7 +184,9 @@ def scene_context(brief, topics, exclude):
 
 
 def start(dbfile, brief, topics, exclude, limit=10):
+    from community_memory import digest, public_text, suggestions
     text, direct, suppressed, features = scene_context(brief, topics, exclude)
+    links = local_links(dbfile)
     unique, checks, failed, unavailable = set(), [], [], []
     archive=ArchiveLookup(dbfile)
     history = lessons(dbfile)
@@ -187,7 +202,11 @@ def start(dbfile, brief, topics, exclude, limit=10):
         topic_set = set(lesson["topics"])
         if topic_set & suppressed:
             continue
-        keyword_hits = [w for w in lesson["keywords"] if hit(text, w)]
+        provenance = local_tool_view(lesson, links, digest, public_text)
+        tools = set(map(normalize, tool_terms(provenance["tools"])))
+        if tools & suppressed:
+            continue
+        keyword_hits = [w for w in tools.union(lesson["keywords"]) if hit(text, w)]
         matching = topic_set & features
         base = "baseline" in topic_set
         if not (keyword_hits or matching or base):
@@ -200,6 +219,7 @@ def start(dbfile, brief, topics, exclude, limit=10):
         resources = [path for f in lesson["resources"] if (path := archive.resolve(f))]
         stale_paths = [f["path"] for f in lesson["resources"] if not archive.resolve(f)]
         view = {k: lesson[k] for k in ("id","project","method","check","verification","status")}
+        view.update(provenance)
         view.update(revision=revision, topics=sorted(topic_set), matched=sorted(matching),
                     resources=resources, evidence=valid_evidence)
         if stale_paths:
@@ -212,11 +232,11 @@ def start(dbfile, brief, topics, exclude, limit=10):
             if old_rev < revision and all(archive.resolve(f) for f in old["evidence"]):
                 failed.append({"id":key,"revision":old_rev,"status":"addressed","project":old["project"],
                                "verification":old["verification"],"failure":old["method"],"check":old["check"],
+                               **local_tool_view(old, links, digest, public_text),
                                "evidence":[archive.resolve(f) for f in old["evidence"]]})
         score = 100 if base else len(keyword_hits)*4 + len(topic_set & direct)*3 + len(matching)
         checks.append((score, view))
     checks.sort(key=lambda v:(-v[0],v[1]["id"]))
-    from community_memory import suggestions
     shared = suggestions(dbfile.with_name("community.sqlite3"), "scene", brief,
                          topics=features, exclude=suppressed, hidden=unique, limit=limit)
     return {"brief": brief, "topics":sorted(features), "excluded":sorted(suppressed), "lessons":[v for _,v in checks[:limit]],
