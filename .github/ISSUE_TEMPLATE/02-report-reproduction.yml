@@ -1,0 +1,27 @@
+name: 报告复现结果
+description: 告诉社区一条经验在你的环境中是否可用，并关联原来的经验卡。
+title: "[复现] "
+body:
+  - type: input
+    id: source
+    attributes:
+      label: 原经验的位置
+      description: 填原 Issue 编号或链接。如果从已安装的经验包发现，请填包版本和卡片 ID。
+      placeholder: "例如 #42，或经验包 v1 / full-building-cover"
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 独立复现记录
+      description: 用自己的公开 GitHub 用户名运行 community-review，将生成的 JSON 粘贴在这里。请写实际使用的环境和观察结果，失败同样欢迎。
+      render: json
+    validations:
+      required: true
+  - type: checkboxes
+    id: observed
+    attributes:
+      label: 复现依据
+      options:
+        - label: 我已独立试过这个版本，并检查了提交的文字可以公开。
+          required: true

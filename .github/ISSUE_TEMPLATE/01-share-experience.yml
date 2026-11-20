@@ -1,0 +1,23 @@
+name: 贡献一条经验
+description: 分享你实际试过的方法或踩坑记录，邀请其他人在自己的环境里复现。
+title: "[经验] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        可以对自己的 Agent 说「用 watch-and-do 把刚才验证过的结果做成可公开的经验卡，给我看」。请使用自己的公开 GitHub 用户名署名。
+  - type: textarea
+    id: card
+    attributes:
+      label: 经验卡
+      description: 粘贴 community-draft 生成的 card.json 内容。用一句简单的标题概括适用场景。
+      render: json
+    validations:
+      required: true
+  - type: checkboxes
+    id: public
+    attributes:
+      label: 公开分享
+      options:
+        - label: 我已核对内容可以公开，也有权分享，卡片中已去除私人信息。
+          required: true
