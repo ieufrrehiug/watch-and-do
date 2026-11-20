@@ -16,6 +16,16 @@ python -B -m unittest discover -s tests -p "test_*.py"
 
 支持目录型 Skills 的 Agent 可以将仓库作为一个名为 `watch-and-do` 的技能目录加载。其他能调用 Python 的 Agent 可以直接调用以上入口，按 JSON 里的 `method` 尝试，用 `check` 检查当前作品。查询按任务类型和关键词匹配，可用更具体的词重新查找。[经验卡数据](seeds/cards.json) · [技能入口](SKILL.md)
 
+## 让 Agent 看一段剪映教程
+
+可以直接说「用 watch-and-do 看这段剪映教程，照着做第 3 到 6 秒的效果，给我一个能继续编辑的草稿」。从技能目录也可以单独试读一段本地视频：
+
+```sh
+python scripts/watch_video.py tutorial.mp4 --output evidence --start 3 --end 6 --frames 5
+```
+
+包内自带视频读取脚本。装好 FFmpeg（含 ffprobe）后，Agent 可以打开带时间点的画面，核对菜单、参数和效果变化。传入支持的公开视频链接还需 yt-dlp。讲解依赖声音时，可提供字幕，或用本地转写工具处理提取的音频。复现可编辑剪映工程还需要兼容的剪映专业版和能操作它的工具，例如 `jianying-local`。收工时把读视频、编辑、验收各步实际用的软件、版本和 Skill 写入同一条经验，下一位使用者能据此检查自己的环境。
+
 ## 能验证到什么程度
 
 首发卡的 `source` 为 `maintainer-seed`。36 张依据程序或数值检查，7 张依据画面对照，2 张依据原项目用户反馈。公开测试用新的参数重做了固定步长、双关节、摆长、逐字入场和细胞滑翔机实验，另测场景、视频和本地停用。独立使用者可以提交成功或失败的具体结果。使用别人的真实作品、不同软件版本或不同设备复验时，请写清差异。
