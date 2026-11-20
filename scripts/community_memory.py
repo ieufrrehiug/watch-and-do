@@ -20,9 +20,9 @@ USAGE = "commercial-use-requires-separate-authorization"
 OWNER = "ieufrrehiug"
 OWNER_ID = 215894027
 REPO = OWNER + "/watch-and-do"
-PROMPT = ("你愿意把做项目时验证过的经验分享给 watch-and-do 社区吗？"
-          "可以选「愿意，每次先给我看」或「只在本机使用」。只分享你确认过的经验卡，"
-          "两种选择都能使用公共经验，以后也能改。")
+PROMPT = ("你希望怎样分享以后验证过的经验？可以选「自动分享脱敏经验卡到公开的 GitHub 社区」、"
+          "「每条先给我看，我批准后再分享」或「只在本机使用」。三种都能使用公共经验，随时可以改。")
+SHARING_CHOICES = ("auto", "review", "private")
 MAX_BYTES = 4 * 1024 * 1024
 CARD = {"id", "author", "task", "kind", "topics", "environment", "method", "check", "basis", "evidence"}
 REVIEW = {"format", "card", "card_sha256", "reviewer", "environment", "outcome", "basis", "evidence"}
@@ -178,6 +178,7 @@ def verify_official(pack, fetch=None):
 
 
 def sharing(path, setting=None, begin=False):
+    require(setting is None or setting in SHARING_CHOICES, "Unknown sharing choice")
     if not (begin or setting or path.is_file()):
         return {"choice": "new", "ask_now": False}
     with closing(writable(path)) as db, db:
@@ -207,15 +208,19 @@ def preview_share(path, data, confirmation):
     sha = digest(data)
     with closing(sqlite3.connect(path, timeout=10)) as db, db:
         db.execute("BEGIN IMMEDIATE")
-        require(db.execute("SELECT 1 FROM sqlite_master WHERE name='sharing_choice'").fetchone()
-                and db.execute("SELECT 1 FROM sharing_choice WHERE slot=1 AND choice='review'").fetchone(),
-                "Sharing is off; keep working locally")
-        if confirmation is None:
+        choice = None
+        if db.execute("SELECT 1 FROM sqlite_master WHERE name='sharing_choice'").fetchone():
+            row = db.execute("SELECT choice FROM sharing_choice WHERE slot=1").fetchone()
+            choice = row[0] if row else None
+        require(choice in ("auto", "review"), "Sharing is off; keep working locally")
+        if choice == "auto":
+            require(confirmation is None, "Sharing choice changed; prepare the current card again")
+        elif confirmation is None:
             db.execute("INSERT OR REPLACE INTO pending_share VALUES(1,?)", (sha,))
         else:
             require(confirmation == sha and db.execute("DELETE FROM pending_share WHERE slot=1 AND digest=?", (sha,)).rowcount == 1,
                     "Content or sharing choice changed; show a new preview")
-    return {"payload": data, "sha256": sha, "ready": confirmation is not None,
+    return {"payload": data, "sha256": sha, "choice": choice, "ready": choice == "auto" or confirmation is not None,
             "destination": "https://github.com/" + REPO + "/issues/new/choose",
             "template": "报告复现结果" if is_review else "贡献一条经验"}
 
@@ -392,8 +397,8 @@ def main():
     share = commands.add_parser("community-sharing", help="Read or update the local sharing choice")
     choice = share.add_mutually_exclusive_group()
     choice.add_argument("--begin", action="store_true", help="Ask once on first use")
-    choice.add_argument("--set", dest="setting", choices=("review", "private"))
-    send = commands.add_parser("community-share-preview", help="Prepare a public issue for explicit item-by-item approval")
+    choice.add_argument("--set", dest="setting", choices=SHARING_CHOICES)
+    send = commands.add_parser("community-share-preview", help="Prepare an issue under the current local sharing choice")
     send.add_argument("--input", type=Path, required=True)
     send.add_argument("--confirmed-sha256", help="Use only after user approved this exact preview")
     find = commands.add_parser("community-find")
