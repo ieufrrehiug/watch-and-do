@@ -102,7 +102,7 @@ def tool_terms(tools):
 
 # Only fixed executable names are looked up. A card can never supply a command.
 EXECUTABLES = {
-    "adobe photoshop": ("Photoshop",), "adobe after effects": ("AfterFX",),
+    "adobe photoshop": ("Photoshop",), "adobe after effects": ("AfterFX",), "剪映专业版": ("JianyingPro",),
     "gimp": ("gimp", "gimp-3.0", "gimp-2.10"), "blender": ("blender",),
     "ffmpeg": ("ffmpeg",), "ffprobe": ("ffprobe",), "node.js": ("node",),
     "microsoft edge": ("msedge", "microsoft-edge", "microsoft-edge-stable"),
@@ -115,6 +115,90 @@ WINDOWS_APPS = {
     "gimp": ("GIMP 3/bin/gimp-3.0.exe", "GIMP 2/bin/gimp-2.10.exe"),
     "firefox": ("Mozilla Firefox/firefox.exe",), "obs studio": ("obs-studio/bin/64bit/obs64.exe",),
 }
+WINDOWS_PRODUCTS = {
+    "剪映专业版": (r"剪映专业版(?:\s+\d+(?:\.\d+)*)?", "JianyingPro.exe"),
+    "adobe after effects": (r"Adobe After Effects(?:\s+(?:CC\s+)?\d{4})?", "AfterFX.exe"),
+}
+
+
+def registered_products(pattern, executable):
+    import winreg
+    def value(handle, key):
+        try:
+            text = winreg.QueryValueEx(handle, key)[0]
+            return text.strip() if isinstance(text, str) else ""
+        except OSError:
+            return ""
+    records, paths = [], []
+    base = r"Software\Microsoft\Windows\CurrentVersion"
+    for hive in (winreg.HKEY_CURRENT_USER, winreg.HKEY_LOCAL_MACHINE):
+        for view in (winreg.KEY_WOW64_64KEY, winreg.KEY_WOW64_32KEY):
+            access = winreg.KEY_READ | view
+            try:
+                with winreg.OpenKey(hive, base + "\\App Paths\\" + executable, 0, access) as product:
+                    paths.append(value(product, ""))
+            except OSError:
+                pass
+            try:
+                with winreg.OpenKey(hive, base + r"\Uninstall", 0, access) as parent:
+                    for i in range(winreg.QueryInfoKey(parent)[0]):
+                        try:
+                            with winreg.OpenKey(parent, winreg.EnumKey(parent, i), 0, access) as product:
+                                name = value(product, "DisplayName")
+                                if re.fullmatch(pattern, name, re.I):
+                                    rec = tuple(value(product, k) for k in ("DisplayVersion", "InstallLocation", "DisplayIcon"))
+                                    if (name, *rec) not in records:
+                                        records.append((name, *rec))
+                        except OSError:
+                            continue
+            except OSError:
+                continue
+    return records, paths
+
+
+def registry_path(value):
+    # Registry entries may contain shell commands or icons. Treat only absolute local paths as data.
+    location = os.path.expandvars(value).strip().strip('"')
+    path = Path(location)
+    if not path.is_absolute() or location.startswith(("\\\\", "//")) or '"' in location or "\x00" in location:
+        return None
+    return path
+
+
+def windows_product(key, wanted):
+    pattern, executable = WINDOWS_PRODUCTS[key]
+    records, app_paths = registered_products(pattern, executable)
+    # Use the recorded version when several editions coexist, otherwise prefer the newest registration.
+    def priority(row):
+        version = row[1]
+        same = bool(version and wanted and (version == wanted or wanted.startswith(version + "x")))
+        parts = tuple(int(n) for n in re.findall(r"\d{1,9}", version))
+        return same, parts
+    records.sort(key=priority, reverse=True)
+    candidates = []
+    version = "unknown"
+    if records:
+        name, version, location, icon = records[0]
+        version = version or "unknown"
+        root = registry_path(location)
+        icon = registry_path(re.sub(r",\s*-?\d+$", "", icon.strip()))
+        if root:
+            candidates.extend((root / executable, root / "Support Files" / executable, root / name / "Support Files" / executable))
+        if icon:
+            candidates.append(icon.parent / executable)
+    # With multiple registrations an unrelated default App Path cannot confirm a particular version.
+    if len(records) <= 1:
+        candidates.extend(p for raw in app_paths if (p := registry_path(raw)))
+    for path in candidates:
+        if path.name.casefold() == executable.casefold() and path.is_file():
+            return {"status": "found", "source": "windows-registry-and-file", "version": version,
+                    "evidence": f"Application executable exists at {path}. " +
+                                (f"Uninstall registration: {name}, DisplayVersion {version}. " if records else "Registered App Path. ") +
+                                "Launch and build-specific behavior have not been tested."}
+    if records:
+        return {"status": "registered", "source": "windows-uninstall-registry", "version": version,
+                "evidence": f"Uninstall registration: {name}, DisplayVersion {version}. Verify the executable path and launch locally."}
+    return None
 
 ROUTES = {
     "subject-cutout": (
@@ -160,7 +244,7 @@ def inventory_entries(inventory):
     return entries
 
 
-def observe(kind, name, entries, roots):
+def observe(kind, name, entries, roots, wanted=None):
     key = name.casefold()
     row = entries.get((kind, key))
     if row:
@@ -175,6 +259,10 @@ def observe(kind, name, entries, roots):
     if key == "python":
         return {"status": "found", "source": "interpreter", "version": ".".join(map(str, sys.version_info[:3])),
                 "evidence": "Running Python interpreter: " + sys.executable}
+    if os.name == "nt" and key in WINDOWS_PRODUCTS:
+        registered = windows_product(key, wanted)
+        if registered:
+            return registered
     for exe in EXECUTABLES.get(key, ()):
         path = shutil.which(exe)
         if path:
@@ -207,17 +295,19 @@ def preflight(tools, check, basis, inventory=(), roots=None):
             continue
         for entry in rows:
             name = entry["name"] if kind == "software" else entry
-            observed = observe(kind, name, entries, roots)
+            observed = observe(kind, name, entries, roots, entry["version"] if kind == "software" else None)
             original_tools.add((kind, name.casefold()))
             if kind == "software":
                 wanted, found = entry["version"], observed.get("version", "unknown")
                 observed["recorded_version"] = wanted
                 comparison = "unrecorded" if wanted == "unknown" else "unconfirmed"
-                if wanted != "unknown" and found != "unknown" and observed["status"] == "found":
+                if wanted != "unknown" and found != "unknown" and observed["status"] in ("found", "registered"):
                     if wanted.casefold() == found.casefold():
                         comparison = "same"
                     elif re.fullmatch(r"\d+(?:\.\d+)*", wanted) and found.startswith(wanted + "."):
                         comparison = "matches-recorded-precision"
+                    elif re.fullmatch(r"\d+(?:\.\d+)*", found) and re.fullmatch(re.escape(found) + r"(?:x\d+|\.\d+(?:\.\d+)*)", wanted, re.I):
+                        comparison = "unconfirmed"
                     else:
                         comparison = "different"
                 observed["version_check"] = comparison
