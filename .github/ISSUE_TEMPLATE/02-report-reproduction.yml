@@ -14,7 +14,7 @@ body:
     id: reproduction
     attributes:
       label: 独立复现记录
-      description: 用自己的公开 GitHub 用户名运行 community-review，将生成的 JSON 粘贴在这里。请写实际使用的环境和观察结果，失败同样欢迎。
+      description: 用自己的公开 GitHub 用户名运行 community-review，将生成的 JSON 粘贴在这里。请记录实际软件、版本、Skill 和观察结果；若用了替代工具，也写清它通过了哪些原始验收项。
       render: json
     validations:
       required: true
