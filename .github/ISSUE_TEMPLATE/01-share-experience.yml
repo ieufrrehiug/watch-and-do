@@ -19,5 +19,5 @@ body:
     attributes:
       label: 公开分享
       options:
-        - label: 我已核对内容可以公开，也有权分享，卡片中已去除私人信息。
+        - label: 我已核对此卡可以公开、有权按仓库的非商业条款分享，并已去除私人信息。商业授权须另行商定。
           required: true

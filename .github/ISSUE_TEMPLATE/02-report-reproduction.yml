@@ -18,6 +18,13 @@ body:
       render: json
     validations:
       required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 可核验的依据
+      description: 给出可重跑的输入、环境和观测值，或附有权公开的对照图、试听样例、测试运行链接。失败也欢迎；缺少公开材料时可先说明，维护者会将其作为线索。
+    validations:
+      required: true
   - type: checkboxes
     id: observed
     attributes:
