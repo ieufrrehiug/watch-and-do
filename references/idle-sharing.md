@@ -12,7 +12,7 @@
 
 ## 在任务中收集
 
-每次技能开始时运行 `community-sharing --begin`，由返回值决定是否需要首次询问。三种设置沿用 `--set auto`、`--set review`、`--set private`，跳过用 `--skip`。形成可分享的文字后运行：
+每次技能开始时运行 `community-sharing --begin`，由返回值决定是否需要首次询问。三种设置沿用 `--set auto`、`--set review`、`--set private`，跳过用 `--skip`。项目做完后，从本机结项记录导出可公开的卡，核对软件、版本、技能及每项用途。复现报告另列复现者自己的工具和用途。将实际导出的文件传入下列命令。详见[社区投稿和复现](community-learning.md)。
 
 ```sh
 python scripts/community_memory.py community-share-preview --input card.json

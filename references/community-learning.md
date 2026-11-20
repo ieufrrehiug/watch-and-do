@@ -27,17 +27,17 @@ $run = './scripts/experience.ps1'
 & $run community-draft --input my-form.json --out card.json
 ```
 
-已有同 ID 的本机场景经验时，加 `--from-scene` 可核对最近有效结果、证据类型与本机证据。导出只使用公开表单文字。Agent 应检查署名、权利、客户信息和私密业务细节；程序也会拦截部分明显的路径、链接和凭证。投递时按当前分享选择处理，只把可公开的卡片正文提交到官方仓库的 Issue。
+有[个人项目结项记录](learning-and-reuse.md)时，加 `--from-capture CANDIDATE_ID`。已有同 ID 的本机场景经验时，加 `--from-scene`。两者都核对结论类型、验证依据和本机证据，公开表单可省去 `tools`，由程序带出该次实做的软件、版本、技能和已记录的用途。若表单内的工具与本机记录冲突，先核对来源再导出。直接撰写的新卡在 `tools.uses` 写明每项具名软件、技能实际承担的步骤。其他公开文字由作者撰写。Agent 应检查署名、公开权利、客户信息和私密业务细节，程序也会拦截部分明显的路径、链接和凭证。投递时按现有分享选择处理。
 
 ## 另一位使用者复现
 
 复现者在自己的环境按卡片描述操作，写下看到的具体结果。可提供截图等证据的公开附件供维护者核验，由提交者另行检查。复现命令把观察、环境和公开署名绑定到卡片内容的 SHA-256。修订卡片后要对新版重新复现。对于踩坑卡，`reproduced` 表示确实观察到了卡片描述的问题。
 
 ```powershell
-& $run community-review --card card.json --reviewer example-peer --environment 'Edge，Windows，桌面端' --outcome reproduced --basis frames --evidence '在窄屏预览中重新检查，完整楼体和标题均在可见范围内。' --out reproduction.json
+& $run community-review --card card.json --reviewer example-peer --environment 'Edge，Windows，桌面端' --tools my-review-tools.json --outcome reproduced --basis frames --evidence '在窄屏预览中重新检查，完整楼体和标题均在可见范围内。' --out reproduction.json
 ```
 
-无法复现时填 `--outcome failed`，说明具体环境和差异。已有安装包的用户可以将 `--card card.json` 换成 `--installed-id full-building-cover`，直接针对自己实际使用的版本报告。工具只能比对署名，独立身份和证据由维护者通过 GitHub 提交记录核对。
+按[工具记录格式](tools-and-skills.md)填写 `my-review-tools.json`，记录本次复现者实际使用的软件、版本、技能和各自用途，包括替代工具。原作者的工具留在原卡内。无法复现时填 `--outcome failed`，说明具体环境和差异。已有安装包的用户可以将 `--card card.json` 换成 `--installed-id full-building-cover`，针对自己实际使用的版本报告。独立身份和证据由维护者通过 GitHub 提交记录核对。
 
 ## 维护者发版
 

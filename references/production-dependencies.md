@@ -4,6 +4,7 @@
 
 | 用途 | 可用工具 | 本包提供的入口 |
 | --- | --- | --- |
+| 观看教程、采样关键画面、读取字幕 | FFmpeg 与 ffprobe；支持的公开链接另需 yt-dlp | scripts/watch_video.py |
 | 分析视频、音轨和编码 | FFmpeg 与 ffprobe，程序可在 PATH 中找到 | scripts/verify_video.py |
 | 生成配乐 | MIDI 仅需 Python；渲染 WAV 使用 FluidSynth、授权 SF2 与 FFmpeg | scripts/compose_music.py |
 | 合成边缘、透孔与逐帧候选复查 | NumPy、opencv-python-headless（或含 cv2 的 OpenCV）、Pillow | scripts/ae-edge/ |

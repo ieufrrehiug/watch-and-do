@@ -26,6 +26,12 @@ python scripts/scene_memory.py scene-start --brief '风雪村庄的客栈，可�
   "check": "这里填如何从运行成品复查该结果",
   "status": "pass",
   "verification": "program",
+  "tools": {
+    "software": [{"name": "Node.js", "version": "unknown"}],
+    "skills": "none",
+    "capabilities": ["walkability-check"],
+    "uses": [{"kind": "software", "name": "Node.js", "purpose": "运行场景的门洞通行测试并读取结果。"}]
+  },
   "evidence": ["evidence/shop-walk.json"],
   "resources": ["src/shopfronts.js"]
 }
@@ -36,7 +42,7 @@ python scripts/scene_memory.py scene-learn --input './scene-lessons.json'
 python scripts/scene_memory.py scene-start --brief '能够从街边走进去的唱片行'
 ```
 
-示例文件名应改成本次已有的路径。示例 scene-lessons.json 位于工程根目录。确认返回的修订号，并回读下一相似需求能取到这次实际学到的内容，再更新本次工作记录。
+把示例路径、软件、技能和用途改成本次实际记录。每项具名软件和技能在 `tools.uses` 写出它实际做的步骤，版本从本次运行或应用核对。示例 scene-lessons.json 位于工程根目录。确认返回的修订号，并回读下一相似需求能取到这次实际学到的内容。若公开分享这条经验，从脱敏表单运行 `community-draft --from-scene`，程序从该次个人记录带出工具。详见[社区经验贡献与复现](community-learning.md)。
 
 status 的 pass 表示所声明的检查通过；fail 会停止推荐这个 id 的旧做法，直到后续带新证据的验证恢复；pending 单独保留待验证观察。verification 区分 program（运行或数字输出）、frames（实际画面比对）、listening（已实际试听）、user（对应用户明确验收或否定）和 observation（尚未证实的观察）。正向做法能附带同一 id 的历史反例。数据库保留每次变化及其来源，查找时核对证据和模板 SHA-256。原有的 capture 与 finalize 继续承担候选信号及原生软件操作配方，场景检索不会将任意记录升级为可自动执行的桌面动作。
 
