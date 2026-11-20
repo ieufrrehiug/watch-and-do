@@ -12,6 +12,8 @@ import unicodedata
 from urllib.request import Request, urlopen
 
 from memory_paths import default_data
+from community_tools import local_links, local_tool_view, preflight, tool_terms, tool_view, unknown_tools, validate_tools
+import community_queue
 
 
 TASKS = ("analysis", "video", "web-code", "scene", "tutorial", "install", "reverse")
@@ -62,7 +64,9 @@ def identifier(value):
 
 
 def card(data):
-    fields(data, CARD)
+    fields(data, CARD | {"tools"} if isinstance(data, dict) and "tools" in data else CARD)
+    if "tools" in data:
+        validate_tools(data["tools"], public_text)
     identifier(data["id"])
     handle(data["author"])
     require(data["task"] in TASKS and data["kind"] in ("method", "pitfall") and data["basis"] in BASES,
@@ -85,7 +89,9 @@ def digest(data):
 
 
 def reviewed(data):
-    fields(data, REVIEW)
+    fields(data, REVIEW | {"tools"} if isinstance(data, dict) and "tools" in data else REVIEW)
+    if "tools" in data:
+        validate_tools(data["tools"], public_text)
     require(data["format"] == "watch-and-do.review.v1", "Unknown review format")
     item = card(data["card"])
     require(data["card_sha256"] == digest(item), "Card changed since review")
@@ -178,7 +184,7 @@ def verify_official(pack, fetch=None):
 
 
 def sharing(path, setting=None, begin=False):
-    require(setting is None or setting in SHARING_CHOICES, "Unknown sharing choice")
+    require(setting is None or setting in (*SHARING_CHOICES, "invited"), "Unknown sharing choice")
     if not (begin or setting or path.is_file()):
         return {"choice": "new", "ask_now": False}
     with closing(writable(path)) as db, db:
@@ -187,11 +193,12 @@ def sharing(path, setting=None, begin=False):
         row = db.execute("SELECT choice FROM sharing_choice WHERE slot=1").fetchone()
         choice = row[0] if row else "new"
         ask = begin and choice == "new"
-        if setting or ask:
+        if ask or (setting and choice != setting):
             choice = setting or "invited"
             db.execute("INSERT OR REPLACE INTO sharing_choice VALUES(1,?)", (choice,))
             db.execute("CREATE TABLE IF NOT EXISTS pending_share (slot INTEGER PRIMARY KEY CHECK(slot=1), digest TEXT NOT NULL)")
             db.execute("DELETE FROM pending_share")
+            community_queue.withdraw(db)
     result = {"choice": choice, "ask_now": ask}
     if ask:
         result["question"] = PROMPT
@@ -213,14 +220,30 @@ def preview_share(path, data, confirmation):
             row = db.execute("SELECT choice FROM sharing_choice WHERE slot=1").fetchone()
             choice = row[0] if row else None
         require(choice in ("auto", "review"), "Sharing is off; keep working locally")
+        community_queue.schema(db)
+        key = community_queue.preview_key(data)
+        timing = ()
+        prior = None
         if choice == "auto":
             require(confirmation is None, "Sharing choice changed; prepare the current card again")
         elif confirmation is None:
-            db.execute("INSERT OR REPLACE INTO pending_share VALUES(1,?)", (sha,))
+            db.execute("DELETE FROM pending_share")
+            prior = db.execute("SELECT issue FROM share_queue WHERE digest=? AND (issue IS NOT NULL OR payload IS NOT NULL)", (sha,)).fetchone()
+            if prior:
+                db.execute("DELETE FROM share_previews WHERE item_key=?", (key,))
+            else:
+                community_queue.save_preview(db, key, sha, canonical(data).decode("utf8"))
         else:
-            require(confirmation == sha and db.execute("DELETE FROM pending_share WHERE slot=1 AND digest=?", (sha,)).rowcount == 1,
-                    "Content or sharing choice changed; show a new preview")
-    return {"payload": data, "sha256": sha, "choice": choice, "ready": choice == "auto" or confirmation is not None,
+            require(confirmation == sha, "Content or sharing choice changed; show a new preview")
+            community_queue.mature_previews(db)
+            current = db.execute("SELECT created,ready FROM share_previews WHERE item_key=? AND digest=?", (key, sha)).fetchone()
+            legacy = db.execute("DELETE FROM pending_share WHERE slot=1 AND digest=?", (sha,)).rowcount
+            require(current or legacy, "Content or sharing choice changed; show a new preview")
+            timing = current or ()
+            db.execute("DELETE FROM share_previews WHERE item_key=? AND digest=?", (key, sha))
+        ready = choice == "auto" or confirmation is not None or bool(prior)
+        status = community_queue.enqueue(db, sha, canonical(data).decode("utf8"), choice, *timing) if ready else "awaiting-approval"
+    return {"payload": data, "sha256": sha, "choice": choice, "ready": ready, "queue_status": status,
             "destination": "https://github.com/" + REPO + "/issues/new/choose",
             "template": "报告复现结果" if is_review else "贡献一条经验"}
 
@@ -344,14 +367,21 @@ def suggestions(path, task, brief, topics=(), exclude=(), hidden=(), limit=10):
         terms = set(map(normalize, item["topics"]))
         if key in blocked_ids or item["task"] != task or terms & blocked_topics:
             continue
-        matched = {t for t in terms if t in relevant or hit(text, t)}
+        provenance = tool_view(item, digest, public_text)
+        search_terms = terms.union(map(normalize, tool_terms(provenance["tools"])))
+        if search_terms & blocked_topics:
+            continue
+        matched = {t for t in search_terms if t in relevant or hit(text, t)}
         if not matched:
             continue
         if key not in matches:
             matches[key] = dict(item, source="community" if note else "maintainer-seed", version=pack["version"], matched=sorted(matched),
                                 maintainer=pack["maintainer"], reproductions=[])
+            matches[key].update(provenance)
         if note:
-            matches[key]["reproductions"].append({k: note[k] for k in ("reviewer", "environment", "basis", "evidence")})
+            reproduction = {k: note[k] for k in ("reviewer", "environment", "basis", "evidence")}
+            reproduction["tools"] = note.get("tools", unknown_tools())
+            matches[key]["reproductions"].append(reproduction)
     return sorted(matches.values(), key=lambda m: (-len(m["matched"]), m["id"]))[:limit]
 
 
@@ -381,6 +411,17 @@ def main():
     review.add_argument("--outcome", choices=("reproduced", "failed"), required=True)
     review.add_argument("--basis", choices=BASES, required=True)
     review.add_argument("--evidence", required=True)
+    review.add_argument("--tools", type=Path, help="JSON describing tools actually used by the reviewer")
+    probe = commands.add_parser("community-preflight", help="Compare a method's tools with this environment")
+    target = probe.add_mutually_exclusive_group(required=True)
+    target.add_argument("--card", type=Path)
+    target.add_argument("--installed-id")
+    target.add_argument("--scene-id", help="Find a personal scene lesson")
+    target.add_argument("--capability", help="Explore an alternative for a task without an existing card")
+    probe.add_argument("--check", help="Local acceptance criterion when using --capability")
+    probe.add_argument("--basis", choices=BASES, help="Acceptance basis when using --capability")
+    probe.add_argument("--skill-root", action="append", type=Path, help="Check this skills directory (repeatable)")
+    probe.add_argument("--inventory", type=Path, help="Local host observations, including GUI apps or session-only skills")
     make = commands.add_parser("community-release", help="As maintainer, assemble a complete reviewed snapshot")
     make.add_argument("--version", type=int, required=True)
     make.add_argument("--maintainer", required=True)
@@ -398,9 +439,11 @@ def main():
     choice = share.add_mutually_exclusive_group()
     choice.add_argument("--begin", action="store_true", help="Ask once on first use")
     choice.add_argument("--set", dest="setting", choices=SHARING_CHOICES)
+    choice.add_argument("--skip", dest="setting", action="store_const", const="invited", help="Skip sharing and cancel pending submissions")
     send = commands.add_parser("community-share-preview", help="Prepare an issue under the current local sharing choice")
     send.add_argument("--input", type=Path, required=True)
     send.add_argument("--confirmed-sha256", help="Use only after user approved this exact preview")
+    community_queue.add_commands(commands)
     find = commands.add_parser("community-find")
     find.add_argument("--brief", required=True)
     find.add_argument("--task", choices=TASKS, required=True)
@@ -412,6 +455,7 @@ def main():
     db = folder / "community.sqlite3"
     if args.command == "community-draft":
         data = card(read(args.input)[0])
+        require("tools" in data, "New cards need tools: name the software, versions, skills and target capabilities; use none or unknown when applicable")
         if args.from_scene:
             require(data["task"] == "scene", "--from-scene requires a scene card")
             check_local(folder / "scenes.sqlite3", data)
@@ -420,9 +464,33 @@ def main():
         data = card(read(args.card)[0]) if args.card else installed_card(db, args.installed_id)
         note = dict(format="watch-and-do.review.v1", card=data, card_sha256=digest(data),
                     reviewer=args.reviewer, environment=args.environment, outcome=args.outcome,
-                    basis=args.basis, evidence=args.evidence)
+                    basis=args.basis, evidence=args.evidence, tools=read(args.tools)[0] if args.tools else unknown_tools())
         result = export(args.out, reviewed(note))
         result["review_sha256"] = digest(note)
+    elif args.command == "community-preflight":
+        provenance = None
+        if args.scene_id:
+            from scene_memory import lessons
+            personal_db = folder / "scenes.sqlite3"
+            data = next((r for _, r in lessons(personal_db) if r["id"] == args.scene_id and r["status"] != "pending"), None)
+            require(data, "No checked personal scene lesson with this ID")
+            provenance = local_tool_view(data, local_links(personal_db), digest, public_text)
+            tools = provenance["tools"]
+            check, basis = data["check"], data["verification"]
+        elif args.capability:
+            require(args.check and args.basis, "--capability needs --check and --basis")
+            tools = dict(unknown_tools(), capabilities=[args.capability])
+            validate_tools(tools, public_text)
+            check, basis = args.check, args.basis
+        else:
+            data = card(read(args.card)[0]) if args.card else installed_card(db, args.installed_id)
+            provenance = tool_view(data, digest, public_text)
+            tools = provenance["tools"]
+            check, basis = data["check"], data["basis"]
+        inventory = read(args.inventory)[0] if args.inventory else []
+        result = preflight(tools, check, basis, inventory, args.skill_root)
+        if provenance:
+            result["tools_source"] = provenance["tools_source"]
     elif args.command == "community-release":
         require(bool(args.review) != args.empty, "Supply --review files, or explicitly choose --empty")
         notes = [reviewed(read(path)[0]) for path in args.review]
@@ -447,9 +515,15 @@ def main():
         result = install(db, data)
     elif args.command == "community-sharing":
         result = sharing(db, args.setting, args.begin)
+        if args.begin and result["choice"] in ("auto", "review"):
+            community_queue.wake_worker(db)
     elif args.command == "community-share-preview":
         data, _ = read(args.input)
         result = preview_share(db, data, args.confirmed_sha256)
+        if result["queue_status"] == "queued":
+            community_queue.wake_worker(db)
+    elif args.command.startswith("community-queue"):
+        result = community_queue.run_command(db, args)
     elif args.command == "community-find":
         if args.task == "scene":
             from scene_memory import lessons, scene_context

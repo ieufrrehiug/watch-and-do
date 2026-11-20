@@ -1,0 +1,4 @@
+interface:
+  display_name: "看懂就做"
+  short_description: "参考视频搭场景、做成片，复用个人经验，也可贡献、复现和检索社区验证过的做法"
+  default_prompt: "用 $watch-and-do 学一下这段视频：[视频链接或本地文件]。"

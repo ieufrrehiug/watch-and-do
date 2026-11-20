@@ -1,0 +1,730 @@
+{
+  "format": "watch-and-do.seed-tools.v1",
+  "profiles": {
+    "ae-gdigrab-black-compositor": {
+      "source": "原经验卡中的 AE 构建号及退回记录中的 gdigrab 捕获方式。",
+      "tools": {
+        "software": [
+          {
+            "name": "Adobe After Effects",
+            "version": "25.6.6x4"
+          },
+          {
+            "name": "FFmpeg",
+            "version": "unknown"
+          }
+        ],
+        "skills": "unknown",
+        "capabilities": [
+          "window-capture"
+        ]
+      }
+    },
+    "curved-display-framing": {
+      "source": "原工程材质与屏幕脚本、项目依赖清单和离线成品复查说明。",
+      "tools": {
+        "software": [
+          {
+            "name": "Three.js",
+            "version": "0.187.0"
+          },
+          {
+            "name": "Playwright",
+            "version": "1.65.1"
+          },
+          {
+            "name": "Google Chrome",
+            "version": "unknown"
+          }
+        ],
+        "skills": "unknown",
+        "capabilities": [
+          "browser-rendering"
+        ]
+      }
+    },
+    "full-frame-pixel-reveal-output-clock": {
+      "source": "原项目成片复盘记录了剪映构建号、原生导出及后续合成脚本。",
+      "tools": {
+        "software": [
+          {
+            "name": "剪映专业版",
+            "version": "11.8.0.14778"
+          },
+          {
+            "name": "Python",
+            "version": "3"
+          },
+          {
+            "name": "FFmpeg",
+            "version": "unknown"
+          }
+        ],
+        "skills": "unknown",
+        "capabilities": [
+          "native-video-effects",
+          "video-encoding"
+        ]
+      }
+    },
+    "interactive-motion-study-recording": {
+      "source": "原项目收工记录记载了 Edge 实机录制、封装组件版本与 FFmpeg 解码检查。",
+      "tools": {
+        "software": [
+          {
+            "name": "Microsoft Edge",
+            "version": "unknown"
+          },
+          {
+            "name": "webm-muxer",
+            "version": "5.1.4"
+          },
+          {
+            "name": "FFmpeg",
+            "version": "unknown"
+          }
+        ],
+        "skills": "unknown",
+        "capabilities": [
+          "canvas-recording",
+          "web-audio-mixing"
+        ]
+      }
+    },
+    "isometric-cutaway-floor-focus": {
+      "source": "原项目场景复盘记录了开工调用的技能；打包说明、取景源码和窄屏复查脚本记录了实际工具。",
+      "tools": {
+        "software": [
+          {
+            "name": "Three.js",
+            "version": "0.187.0"
+          },
+          {
+            "name": "Playwright",
+            "version": "1.65.1"
+          },
+          {
+            "name": "Microsoft Edge",
+            "version": "unknown"
+          },
+          {
+            "name": "Node.js",
+            "version": "24"
+          }
+        ],
+        "skills": [
+          "watch-and-do"
+        ],
+        "capabilities": [
+          "browser-rendering"
+        ]
+      }
+    },
+    "junction-turn-taking": {
+      "source": "原项目路口检测脚本的实际浏览器通道及项目依赖清单。",
+      "tools": {
+        "software": [
+          {
+            "name": "Three.js",
+            "version": "0.187.0"
+          },
+          {
+            "name": "Playwright",
+            "version": "1.65.1"
+          },
+          {
+            "name": "Microsoft Edge",
+            "version": "unknown"
+          }
+        ],
+        "skills": "unknown",
+        "capabilities": [
+          "browser-rendering"
+        ]
+      }
+    },
+    "miniature-action-result": {
+      "source": "原项目场景复盘、交互复查脚本及工程说明，包含 Edge 主检查和 Chrome 点击复验。",
+      "tools": {
+        "software": [
+          {
+            "name": "Three.js",
+            "version": "0.187.0"
+          },
+          {
+            "name": "Playwright",
+            "version": "1.65.1"
+          },
+          {
+            "name": "Microsoft Edge",
+            "version": "unknown"
+          },
+          {
+            "name": "Google Chrome",
+            "version": "unknown"
+          },
+          {
+            "name": "Node.js",
+            "version": "24"
+          }
+        ],
+        "skills": [
+          "watch-and-do"
+        ],
+        "capabilities": [
+          "browser-rendering"
+        ]
+      }
+    },
+    "motion-library-blobs": {
+      "source": "原项目学习记录、实测脚本及练习页面所加载的运行库。",
+      "tools": {
+        "software": [
+          {
+            "name": "Microsoft Edge",
+            "version": "unknown"
+          },
+          {
+            "name": "Python",
+            "version": "3"
+          },
+          {
+            "name": "Playwright",
+            "version": "unknown"
+          },
+          {
+            "name": "NumPy",
+            "version": "unknown"
+          },
+          {
+            "name": "Pillow",
+            "version": "unknown"
+          },
+          {
+            "name": "Paper.js",
+            "version": "0.12.18"
+          }
+        ],
+        "skills": "unknown",
+        "capabilities": [
+          "browser-rendering"
+        ]
+      }
+    },
+    "motion-library-bounce": {
+      "source": "原项目学习记录、实测脚本及练习页面所加载的运行库。",
+      "tools": {
+        "software": [
+          {
+            "name": "Microsoft Edge",
+            "version": "unknown"
+          },
+          {
+            "name": "Python",
+            "version": "3"
+          },
+          {
+            "name": "Playwright",
+            "version": "unknown"
+          },
+          {
+            "name": "NumPy",
+            "version": "unknown"
+          },
+          {
+            "name": "Pillow",
+            "version": "unknown"
+          },
+          {
+            "name": "Matter.js",
+            "version": "0.20.0"
+          }
+        ],
+        "skills": "unknown",
+        "capabilities": [
+          "browser-rendering"
+        ]
+      }
+    },
+    "motion-library-chime": {
+      "source": "原项目学习记录、实测脚本及练习页面所加载的运行库。",
+      "tools": {
+        "software": [
+          {
+            "name": "Microsoft Edge",
+            "version": "unknown"
+          },
+          {
+            "name": "Python",
+            "version": "3"
+          },
+          {
+            "name": "Playwright",
+            "version": "unknown"
+          },
+          {
+            "name": "NumPy",
+            "version": "unknown"
+          },
+          {
+            "name": "Pillow",
+            "version": "unknown"
+          }
+        ],
+        "skills": "unknown",
+        "capabilities": [
+          "browser-rendering"
+        ]
+      }
+    },
+    "motion-library-p5": {
+      "source": "原项目学习记录、实测脚本及练习页面所加载的运行库。",
+      "tools": {
+        "software": [
+          {
+            "name": "Microsoft Edge",
+            "version": "unknown"
+          },
+          {
+            "name": "Python",
+            "version": "3"
+          },
+          {
+            "name": "Playwright",
+            "version": "unknown"
+          },
+          {
+            "name": "NumPy",
+            "version": "unknown"
+          },
+          {
+            "name": "Pillow",
+            "version": "unknown"
+          },
+          {
+            "name": "p5.js",
+            "version": "1.11.3"
+          }
+        ],
+        "skills": "unknown",
+        "capabilities": [
+          "browser-rendering"
+        ]
+      }
+    },
+    "motion-library-glass": {
+      "source": "原项目学习记录、实测脚本及练习页面所加载的运行库。",
+      "tools": {
+        "software": [
+          {
+            "name": "Microsoft Edge",
+            "version": "unknown"
+          },
+          {
+            "name": "Python",
+            "version": "3"
+          },
+          {
+            "name": "Playwright",
+            "version": "unknown"
+          },
+          {
+            "name": "NumPy",
+            "version": "unknown"
+          },
+          {
+            "name": "Pillow",
+            "version": "unknown"
+          },
+          {
+            "name": "d3-delaunay",
+            "version": "6.0.4"
+          }
+        ],
+        "skills": "unknown",
+        "capabilities": [
+          "browser-rendering"
+        ]
+      }
+    },
+    "motion-library-letters": {
+      "source": "原项目学习记录、实测脚本及练习页面所加载的运行库。",
+      "tools": {
+        "software": [
+          {
+            "name": "Microsoft Edge",
+            "version": "unknown"
+          },
+          {
+            "name": "Python",
+            "version": "3"
+          },
+          {
+            "name": "Playwright",
+            "version": "unknown"
+          },
+          {
+            "name": "NumPy",
+            "version": "unknown"
+          },
+          {
+            "name": "Pillow",
+            "version": "unknown"
+          },
+          {
+            "name": "Splitting.js",
+            "version": "unknown"
+          }
+        ],
+        "skills": "unknown",
+        "capabilities": [
+          "browser-rendering"
+        ]
+      }
+    },
+    "motion-library-water": {
+      "source": "原项目学习记录、实测脚本及练习页面所加载的运行库。",
+      "tools": {
+        "software": [
+          {
+            "name": "Microsoft Edge",
+            "version": "unknown"
+          },
+          {
+            "name": "Python",
+            "version": "3"
+          },
+          {
+            "name": "Playwright",
+            "version": "unknown"
+          },
+          {
+            "name": "NumPy",
+            "version": "unknown"
+          },
+          {
+            "name": "Pillow",
+            "version": "unknown"
+          },
+          {
+            "name": "jQuery",
+            "version": "3.7.1"
+          },
+          {
+            "name": "jQuery Ripples",
+            "version": "0.6.3"
+          }
+        ],
+        "skills": "unknown",
+        "capabilities": [
+          "browser-rendering"
+        ]
+      }
+    },
+    "motion-library-wood": {
+      "source": "原项目学习记录、实测脚本及练习页面所加载的运行库。",
+      "tools": {
+        "software": [
+          {
+            "name": "Microsoft Edge",
+            "version": "unknown"
+          },
+          {
+            "name": "Python",
+            "version": "3"
+          },
+          {
+            "name": "Playwright",
+            "version": "unknown"
+          },
+          {
+            "name": "NumPy",
+            "version": "unknown"
+          },
+          {
+            "name": "Pillow",
+            "version": "unknown"
+          },
+          {
+            "name": "Three.js",
+            "version": "0.187.0"
+          },
+          {
+            "name": "tsl-textures",
+            "version": "3.0.5"
+          }
+        ],
+        "skills": "unknown",
+        "capabilities": [
+          "browser-rendering"
+        ]
+      }
+    },
+    "motion-study-3d": {
+      "source": "原项目进阶学习记录、复查脚本、分组入口及本地运行库版本清单。",
+      "tools": {
+        "software": [
+          {
+            "name": "Microsoft Edge",
+            "version": "unknown"
+          },
+          {
+            "name": "Python",
+            "version": "3"
+          },
+          {
+            "name": "Playwright",
+            "version": "unknown"
+          },
+          {
+            "name": "NumPy",
+            "version": "unknown"
+          },
+          {
+            "name": "Pillow",
+            "version": "unknown"
+          },
+          {
+            "name": "Three.js",
+            "version": "0.187.0"
+          }
+        ],
+        "skills": "unknown",
+        "capabilities": [
+          "browser-rendering"
+        ]
+      }
+    },
+    "motion-study-2d": {
+      "source": "原项目进阶学习记录、复查脚本、分组入口及本地运行库版本清单。",
+      "tools": {
+        "software": [
+          {
+            "name": "Microsoft Edge",
+            "version": "unknown"
+          },
+          {
+            "name": "Python",
+            "version": "3"
+          },
+          {
+            "name": "Playwright",
+            "version": "unknown"
+          },
+          {
+            "name": "NumPy",
+            "version": "unknown"
+          },
+          {
+            "name": "Pillow",
+            "version": "unknown"
+          }
+        ],
+        "skills": "unknown",
+        "capabilities": [
+          "browser-rendering"
+        ]
+      }
+    },
+    "reference-camera-edit-shot-map": {
+      "source": "原项目运镜工作记录列出的逐帧实机录制与转码环境。",
+      "tools": {
+        "software": [
+          {
+            "name": "Google Chrome",
+            "version": "unknown"
+          },
+          {
+            "name": "Playwright",
+            "version": "unknown"
+          },
+          {
+            "name": "Vite",
+            "version": "8.3.8"
+          },
+          {
+            "name": "Node.js",
+            "version": "24.19"
+          },
+          {
+            "name": "FFmpeg",
+            "version": "8.1.2"
+          }
+        ],
+        "skills": "unknown",
+        "capabilities": [
+          "browser-rendering",
+          "frame-accurate-capture"
+        ]
+      }
+    },
+    "reference-camera-film-can-substitute-for-modeled-view": {
+      "source": "原项目实体纠正稿的制作说明和同机位对照记录，记录的是模型复查环境。",
+      "tools": {
+        "software": [
+          {
+            "name": "Blender",
+            "version": "4.5 LTS"
+          },
+          {
+            "name": "Three.js",
+            "version": "unknown"
+          }
+        ],
+        "skills": "unknown",
+        "capabilities": [
+          "model-view-comparison"
+        ]
+      }
+    },
+    "reference-native-color-player-check": {
+      "source": "原项目播放器复验记录写明 Edge 主版本，原生编码和回查脚本记载处理工具。",
+      "tools": {
+        "software": [
+          {
+            "name": "Microsoft Edge",
+            "version": "157"
+          },
+          {
+            "name": "Python",
+            "version": "3"
+          },
+          {
+            "name": "NumPy",
+            "version": "unknown"
+          },
+          {
+            "name": "FFmpeg",
+            "version": "unknown"
+          }
+        ],
+        "skills": "unknown",
+        "capabilities": [
+          "video-player-color-check"
+        ]
+      }
+    },
+    "terraces-seasonal-foliage": {
+      "source": "原工程季节材质源码、依赖清单和离线版季节复查说明。",
+      "tools": {
+        "software": [
+          {
+            "name": "Three.js",
+            "version": "0.187.0"
+          },
+          {
+            "name": "Playwright",
+            "version": "1.65.1"
+          },
+          {
+            "name": "Microsoft Edge",
+            "version": "unknown"
+          },
+          {
+            "name": "Node.js",
+            "version": "24"
+          }
+        ],
+        "skills": "unknown",
+        "capabilities": [
+          "browser-rendering"
+        ]
+      }
+    },
+    "waterfront-berthing": {
+      "source": "渡口复演说明记载开工调用的技能；工程依赖和实际交互检查入口列出本机工具。",
+      "tools": {
+        "software": [
+          {
+            "name": "Three.js",
+            "version": "0.187.0"
+          },
+          {
+            "name": "Playwright",
+            "version": "1.65.1"
+          },
+          {
+            "name": "Microsoft Edge",
+            "version": "unknown"
+          }
+        ],
+        "skills": [
+          "watch-and-do"
+        ],
+        "capabilities": [
+          "browser-rendering"
+        ]
+      }
+    },
+    "wet-surface-after-rain": {
+      "source": "原工程湿路面材质源码、依赖清单与离线成品复查说明。",
+      "tools": {
+        "software": [
+          {
+            "name": "Three.js",
+            "version": "0.187.0"
+          },
+          {
+            "name": "Playwright",
+            "version": "1.65.1"
+          },
+          {
+            "name": "Google Chrome",
+            "version": "unknown"
+          }
+        ],
+        "skills": "unknown",
+        "capabilities": [
+          "browser-rendering"
+        ]
+      }
+    }
+  },
+  "cards": {
+    "3c12925131e7f66142e6936a8707de502ec28be790f7bd6232918ace286aa07e": "ae-gdigrab-black-compositor",
+    "db6e3ddf7796b37d92fc78146acba642173c90b7690314b3031cee52a0418a3f": "curved-display-framing",
+    "8dff65239d9f4501569edf62174482134707eeb1be969a0d0f604a523e9a4362": "full-frame-pixel-reveal-output-clock",
+    "67a3a942212af34a6605caac0b2a6eeab1d11f7a339355b91207f331f061f81d": "interactive-motion-study-recording",
+    "2e000e1b230b2e2208b9de000ca53a86b8870ad0dd7d286c25dfe5e886527269": "isometric-cutaway-floor-focus",
+    "f68a1a56190829554d144c82b75f638974843a46f24fe749b8652f3582505d60": "junction-turn-taking",
+    "ed8fc0e5660f14a42b6976e0cf3a4673a345ae8313b17c61043840dba5ca70b9": "miniature-action-result",
+    "bd78dcb88f1a56a16818ba41db4c958b41e344f7d5272e5c6e4fc06eae773066": "motion-library-blobs",
+    "9c968ba4e367fcf6893ac35b60854c55a49d4ba8de4a6e2bb96b746d5e0a8f10": "motion-library-bounce",
+    "22ba387bced6c6b228ab4515a49b882f53c457ef42324d7b0ff7d325d6774abc": "motion-library-chime",
+    "82ed94962fad21ffd12c02c876e70ececc42320a9fecf32406bb2bc2fff4e57c": "motion-library-p5",
+    "94b6bf5ff5e112f695c9a0fc5aef6ab1acb09ffa750f47ba30c1415c60eb4a79": "motion-library-p5",
+    "cffa1ebb927e0dd0ba80572a59123df2a0636533d026cddbda9417c3b7577024": "motion-library-glass",
+    "b8694dbb18864b421833bf2bc6b05286b3799e9f6ce16f5e6d3ef230b2039497": "motion-library-letters",
+    "f59fd18dfc3fc9ba134b6474ad174b74c21388d0f02eb2e5a154213131d1d8b5": "motion-library-p5",
+    "7ed64766c6e210ff613a0e4038ddfae3c93d80989628bec428691f72b18932be": "motion-library-p5",
+    "4ba59d91aa81f857fb086faace6a38141f8726c1bd8e59468a702987a576da60": "motion-library-p5",
+    "dab1496d555df29cfe546f224c8bc8a2192eb4dd2f3661b4794296b70447ff88": "motion-library-water",
+    "96c49c8832946961cece0e4968ba032acf0e2e4385a221bf0df2ee79b55813b4": "motion-library-p5",
+    "907d0858996092bf2a0269b291fa144ba21b559e1b1833ac040c4456b0751c6a": "motion-library-wood",
+    "4f395ea2b89bb00dd82df0f06c2631a3538f4ce302031f4d99a90de90e88eb1e": "motion-study-3d",
+    "701adcc9c6c1c285df02f58ea0c6d28cf2f4957cb2b07ee66e71809284155401": "motion-study-3d",
+    "0f27ab39981ce4f05e3cc9fd51bf47f9ba268c0a6535b71c73736b2a5da9a6c9": "motion-study-3d",
+    "75cf4644514eca224c5be21cf459c261021f7d7b185942936cb0f862fbc3cdb4": "motion-study-2d",
+    "9b5fb00a371beb66e1b462682b4f9389ec83d1779c6bf46be5967726d25b5ab0": "motion-study-3d",
+    "42c8af8d752a4062fe37ff76d595ee251f38b686c4a3e61ca171671f48ea52c0": "motion-study-3d",
+    "51230d12e7ad3193cff5ff2447cff3987d94c114329981ff6b784061c0e2bb86": "motion-study-2d",
+    "10ca112159bbd37887595cec8c1d7c81199bf6688d59d3b970cf5a8d44e46c18": "motion-study-3d",
+    "f5850b1f4fb79388880fbcfbee1d20b8e7835e8bbe80f4d64e6fa5a466eccdfa": "motion-study-2d",
+    "1e5734801db13e0fbc468d88af06d2f9f00c9c4e5ee3222d4c72c7e4e0ef3d6d": "motion-study-3d",
+    "fae6c9e7ebf28490ed2ec7fff366278a02857ac3eaca6b92fe5f433c64b7c428": "motion-study-3d",
+    "966facf5410ef0be48d93e5a0280a7464413caf8e90a46bafd2bd8cf6a36c78b": "motion-study-3d",
+    "fd90c13582f0acc5e7a84de332a9a25f637156e62f8aaa5823b53117f453525c": "motion-study-2d",
+    "037071a0aae6e2135d0256c7fc36f0d391ad4028ca712020294cea471c15e4fa": "motion-study-2d",
+    "ebb52081398f70eae038552eb1803cc8c1a2c0c04d59ae5ced6a55a12d853206": "motion-study-3d",
+    "a6a6b720174158a38afbd8cc74b530b6df8d9dd17a79ee3a6c6bfe6656171598": "motion-study-3d",
+    "caa5a96e537c666bc30917f1f76c7bf13a51f70172d5fc955e15090316919029": "motion-study-3d",
+    "1b19c2df0fcff361ad6e8ff00f15899c87bc3dfade61ac5237e15fee2718d2a0": "motion-study-2d",
+    "d9b3d8a2f5e25a89760940747c09e6e3af4cc576488d505b2bdb880b9e8ea90d": "motion-study-2d",
+    "a844bb5925df441a7d7a4b46a97f811d1f3daae8d3351ee7a3e3bca9af534156": "reference-camera-edit-shot-map",
+    "9af794ff10b0f92c13836c1968c5d1a0237d6364df61398149026891520ae689": "reference-camera-film-can-substitute-for-modeled-view",
+    "b20c2eaac7e25b56937b7434f96d42da79c401af601067375bfaf24ef1a957c1": "reference-native-color-player-check",
+    "d4780907b0196e4d3251eb750c8e139df9bea0611e7d1ce33cbc52ac0ad7e33b": "terraces-seasonal-foliage",
+    "2a77834bb78c405a58bc1b358cb2cf90e9715a43f2cd48ed911a648ffadb4eec": "waterfront-berthing",
+    "1f69e70c3c071a6346e2eb2dba43b76cde60362fc3ea4b47a00494faf2eab224": "wet-surface-after-rain"
+  }
+}

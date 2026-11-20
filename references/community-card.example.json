@@ -5,6 +5,11 @@
   "kind": "method",
   "topics": ["封面", "完整楼体", "cover"],
   "environment": "网页场景成片，竖版手机预览",
+  "tools": {
+    "software": [{"name": "Microsoft Edge", "version": "unknown"}],
+    "skills": "none",
+    "capabilities": ["browser-rendering"]
+  },
   "method": "从上色后的镜头选出屋顶和底座都可见的一帧，标题放到楼体旁边。",
   "check": "缩到发布页的手机预览尺寸，检查屋顶、底座和标题是否同时可见。",
   "basis": "frames",

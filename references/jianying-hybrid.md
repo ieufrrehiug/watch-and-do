@@ -1,0 +1,17 @@
+# Jianying hybrid production
+
+Honor the selected mode. For a Jianying tutorial requested **native-only**, use native materials/effects/timeline/export. Do not substitute HTML, FFmpeg-composited visuals or generated approximations for the demonstrated effect. FFmpeg remains useful for analysis/verification. A VIP restriction is a reported blocker, not a reason to silently change engines. Preserve a preview and editable project if the user accepts stopping before export.
+
+Use an installed, version-compatible Jianying desktop adapter or edit and export in the application UI. CapCut editions need their own verified controls and available resources. HyperFrames creates deterministic complex animation assets; Jianying retains text, source replacement, clip order and separate sound tracks. Describe which visual layers have been baked into a clip. A baked approximation must never be labeled the native effect or an exact parameter match.
+
+1. Reuse canonical mixed-media evidence. Save an effect recipe: post, image/timecode, observed action, stated settings, layer order from bottom to top, duration, source requirements, resource IDs, UI units, API units, application version and verification state. Preserve contradictory readings as variants.
+2. Inspect local application version, process, actual draft root and dependencies without installing anything. Review a pinned upstream implementation and retain licenses. Check draft generation and UI export separately against the installed build.
+3. Prove a short Chinese/motion/stereo sample: generate a new native draft, open it, save, return home, reopen, export using Jianying, then fully decode the actual MP4. Version or layout mismatches stop the action and preserve evidence.
+4. Prefer effects available through existing local rights. Check native output pixels as well as timeline presence. Missing resources or membership do not authorize purchase. Use a HyperFrames fallback only within an authorized hybrid route, with named differences; retain original materials and editable source.
+5. Store absolute frame positions, source ranges, text, ordered effects and independent tracks in the production plan. Build unique new drafts. Never overwrite a user-edited or opaque native project with a stale generator. Edit native projects in Jianying; parameter experiments are new copies.
+6. Check identity, focus, DPI, layout and unknown windows before input. Do not click through a login, membership or unknown popup. On error preserve the staged output, screenshots, error and recovery pointer. Existing output paths must be refused.
+7. Verify native exports, before/during/after frames, cumulative timing, audio streams and modification isolation. Separate full decode, visual review and actual listening. If native export is blocked, deliver independent work but explicitly mark that acceptance item incomplete; a HyperFrames MP4 is not a native-export substitute.
+
+Resume from `workflow.md`, plan, recipe and the native draft, not from fresh video downloads. Keep the original analysis-only, prompt-only, webpage recreation and install routes unchanged.
+
+For mixed image/video posts, enumerate the actual carousel items and densely inspect each demonstration around the change (typically 10–15 fps across a short 3-second transition), plus each tutorial image. Do not merge related-post recommendations into evidence. Separate BGM, transition accents and continuous texture. Follow [audio and motion evidence](audio-and-motion.md) before declaring a music match complete.

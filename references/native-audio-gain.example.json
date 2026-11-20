@@ -1,0 +1,167 @@
+{
+  "schema": 1,
+  "id": "native-audio-gain-example",
+  "task_type": "video",
+  "app": "jianying",
+  "version": "11.8.0.14778",
+  "kind": "operation",
+  "description": "Example for one version and layout. Supply your own project, UI crops, clip location and gain value. Check the selected clip after a native save and reopen.",
+  "params": {
+    "project": {
+      "type": "str"
+    },
+    "clip_name": {
+      "type": "str"
+    },
+    "clip_point": {
+      "type": "point"
+    },
+    "label_rect": {
+      "type": "rect"
+    },
+    "border": {
+      "type": "point"
+    },
+    "clip_template": {
+      "type": "file"
+    },
+    "gain": {
+      "type": "float",
+      "min": -60,
+      "max": 19.9
+    },
+    "gain_panel_template": {
+      "type": "file"
+    }
+  },
+  "native": {
+    "version": "11.8.0.14778",
+    "probes": {
+      "gain_panel_match": {
+        "rect": [
+          1652,
+          174,
+          1687,
+          195
+        ],
+        "template": "${gain_panel_template}",
+        "max_mean_error": 5
+      },
+      "gain": {
+        "rect": [
+          1884,
+          173,
+          1954,
+          197
+        ],
+        "type": "number",
+        "description": "Native spinbox value; text entry alone may not persist until +/-0.1dB button commit."
+      },
+      "clip_label_match": {
+        "rect": "${label_rect}",
+        "template": "${clip_template}",
+        "max_mean_error": 5
+      },
+      "selected_border": {
+        "point": "${border}",
+        "color": [
+          255,
+          255,
+          255
+        ],
+        "tolerance": 35
+      }
+    }
+  },
+  "environment": {
+    "version": "11.8.0.14778",
+    "dpi": 120,
+    "layout": [
+      2048,
+      1280
+    ],
+    "project": "${project}",
+    "foreground": true,
+    "unknown_dialog": false
+  },
+  "steps": [
+    {
+      "id": "select-segment",
+      "action": {
+        "op": "click",
+        "point": "${clip_point}"
+      },
+      "after": {
+        "clip_label_match": true,
+        "selected_border": true,
+        "gain_visible": true
+      }
+    },
+    {
+      "id": "focus-gain",
+      "before": {
+        "selected_border": true,
+        "gain_panel_match": true,
+        "gain_visible": true
+      },
+      "action": {
+        "op": "click",
+        "point": [
+          1912,
+          184
+        ]
+      },
+      "after": {
+        "clip_label_match": true,
+        "selected_border": true,
+        "gain_panel_match": true
+      }
+    },
+    {
+      "id": "set-gain",
+      "before": {
+        "selected_border": true,
+        "gain_panel_match": true
+      },
+      "action": {
+        "op": "keys",
+        "keys": "{Ctrl}a${gain}{Enter}",
+        "physical": true
+      },
+      "after": {
+        "gain": "${gain}",
+        "clip_label_match": true,
+        "selected_border": true
+      }
+    },
+    {
+      "id": "native-increment",
+      "action": {
+        "op": "click",
+        "point": [
+          1964,
+          178
+        ]
+      },
+      "after": {
+        "gain_panel_match": true,
+        "selected_border": true
+      }
+    },
+    {
+      "id": "native-decrement",
+      "action": {
+        "op": "click",
+        "point": [
+          1964,
+          191
+        ]
+      },
+      "after": {
+        "gain": "${gain}",
+        "gain_panel_match": true,
+        "selected_border": true
+      }
+    }
+  ]
+}
