@@ -1,0 +1,844 @@
+{
+  "format": "watch-and-do.seed.v1",
+  "usage": "commercial-use-requires-separate-authorization",
+  "version": 1,
+  "maintainer": "ieufrrehiug",
+  "cards": [
+    {
+      "id": "ae-gdigrab-black-compositor",
+      "author": "ieufrrehiug",
+      "task": "video",
+      "kind": "pitfall",
+      "topics": [
+        "AE",
+        "录屏",
+        "黑屏",
+        "合成窗口",
+        "gdigrab"
+      ],
+      "environment": "桌面视频制作、成片或参考对照。",
+      "method": "本机 AE 25.6.6x4 用 gdigrab 录窗口，即使面板正常也可能完全没有合成画面。WGC 仅核过一个有效帧。",
+      "check": "用新素材先录 5–10 秒实际运动、拖动时间线并停录，回放已写出的视频的多个时点；仅有窗口、输出文件或单帧均不足以验收。",
+      "basis": "frames",
+      "evidence": "Windows 上 AE 25.6.6x4 窗口录制曾出现面板可见而合成区黑屏；替代路径当时只确认了一个有效帧。"
+    },
+    {
+      "id": "curved-display-framing",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "弧形屏",
+        "转角屏",
+        "裸眼屏",
+        "曲面",
+        "curved",
+        "display"
+      ],
+      "environment": "网页互动场景与画面对照。",
+      "method": "将横幅画面铺到连续曲面。先在街口主视点定位主图轮廓，把容易藏进拐角的头部或文字移到可读区，再在侧向近景检查沿弧连续性。控制发光亮部并给橱窗、路面留下与主屏相应的色彩。",
+      "check": "分别拍下街口和斜侧近景。检查主图在主视点完整、转到侧面能看出屏幕厚度和弯折，再换昼夜看主体细节。",
+      "basis": "frames",
+      "evidence": "原项目留有三个视图，能比较主图在正面和转角处的连续性。"
+    },
+    {
+      "id": "full-frame-pixel-reveal-output-clock",
+      "author": "ieufrrehiug",
+      "task": "video",
+      "kind": "method",
+      "topics": [
+        "像素唤彩",
+        "显色",
+        "转场",
+        "卡点",
+        "特效时长"
+      ],
+      "environment": "桌面视频制作、成片或参考对照。",
+      "method": "先固定镜头剪辑，再在最终输出时间线上设置显色效果的时长。将界面和画面边角纳入效果范围；镜头加速时单独检查转场时长。",
+      "check": "逐段查看起灰、起粒、扫描与全彩，逐帧对照底片和原生直出并核对音轨包。第四版已检查成片画面，用户尚未验收这个效果版本。",
+      "basis": "frames",
+      "evidence": "原项目在四个时间点做了画面对照。该版的检查依据是成片画面。"
+    },
+    {
+      "id": "interactive-motion-study-recording",
+      "author": "ieufrrehiug",
+      "task": "video",
+      "kind": "method",
+      "topics": [
+        "画布录制",
+        "WebCodecs",
+        "音画同步",
+        "WebM",
+        "互动录制"
+      ],
+      "environment": "桌面视频制作、成片或参考对照。",
+      "method": "在录制真实画布时用 WebCodecs 编码帧，以相同的时钟记录原声起点、暂停、循环和手势事件，用 OfflineAudioContext 生成所选混音，再将视频和声音封装至 WebM。",
+      "check": "从最终本地入口实际录下两个场景，下载后检查两轨、完整解码和非零音频。仅互动声模式另作拖动录制，检查声音不是原片配乐。",
+      "basis": "program",
+      "evidence": "原项目实录两个画布场景，核验音视频轨、完整解码和非零音频。"
+    },
+    {
+      "id": "isometric-cutaway-floor-focus",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "剖面楼",
+        "微缩建筑",
+        "手机选层",
+        "楼体",
+        "建筑场景",
+        "cutaway",
+        "miniature"
+      ],
+      "environment": "网页互动场景与画面对照。",
+      "method": "先从参考全景量取开口、层高与外部楼梯的位置，再从近景定每层的地坪、主道具、人物动作及材质。保持同一正交方向，全楼与单层用同一套模型；手机选层直接独看并重新取景。粒度进材质，轮廓保留抗锯齿。",
+      "check": "从真实成品对照全楼、近景、手机选层；确认手机只显示目标楼层且控件均在视口，检查树叶、水波、温室覆膜从近处仍能辨认。",
+      "basis": "frames",
+      "evidence": "原项目留有全楼、手机视图和两个单层近景，对应相同建筑的不同取景。"
+    },
+    {
+      "id": "junction-turn-taking",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "十字路口",
+        "行人",
+        "交通",
+        "路权",
+        "让行",
+        "traffic"
+      ],
+      "environment": "网页互动场景与画面对照。",
+      "method": "十字路口按可能交叉的行进方向分批放行。新来者在停止线或过街等候点等待，已进入的行人与车辆先走出整个冲突区，再交换路权。行人与同向横街车辆可并行；可操控角色保留独立的实体避让。",
+      "check": "使用与成品相同的全部行人和车辆并跑多个周期，逐个检查每分钟位移、最长等待、碰撞和净距。另在实际交付文件观察信号实际转换、各主体持续前进，并检查用户控制角色进入和离开车道后车辆让行与起步。",
+      "basis": "program",
+      "evidence": "原项目保存了多周期检查，以及可控角色进入和离开车道时的场景检查。"
+    },
+    {
+      "id": "miniature-action-result",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "微缩人物",
+        "计分",
+        "连点",
+        "篮球",
+        "钓鱼",
+        "fishing"
+      ],
+      "environment": "网页互动场景与画面对照。",
+      "method": "把微缩人物的出手、道具轨迹与最终结果绑定。篮球到筐才记分，前一球仍在空中时拒绝重复计分；钓鱼区分抛竿、咬钩窗口、成功和空竿。",
+      "check": "在离线交付入口实际点击，并验证真实比分及鱼获状态。覆盖过早、过晚、正确时机和连点；活动声音从最终音频节点量取。",
+      "basis": "program",
+      "evidence": "原项目保存了离线入口的互动状态检查，覆盖投篮与不同抛竿时机。"
+    },
+    {
+      "id": "motion-library-blobs",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "液滴",
+        "液滴黏连",
+        "碰撞与形变",
+        "融合",
+        "blobs"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "两圆间的贝塞尔连接有明确的截止距离，外观像液体，用的是几何连接。",
+      "check": "移动大液滴靠近小液滴，慢慢拉远，观察连接颈消失的位置。",
+      "basis": "program",
+      "evidence": "把大液滴移到同一点，场内同时存在的连接颈从 1 条变为 5 条。"
+    },
+    {
+      "id": "motion-library-bounce",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "回弹",
+        "碰撞与形变",
+        "落珠",
+        "落珠回弹",
+        "bounce"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "碰撞恢复系数控制回弹高度，可以用落点和第一个反弹顶点反推需要的手感。",
+      "check": "点击任意高度释放一颗珠子。",
+      "basis": "program",
+      "evidence": "固定落点后比较第一次回弹的顶点。 在画布高度 62 处松开，首次回弹高度由 11.4 变为 150.5 像素。"
+    },
+    {
+      "id": "motion-library-chime",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "余音",
+        "叮铃余音",
+        "敲击",
+        "文字与声音",
+        "chime"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "共用的合成函数控制敲击起音、各泛音和独立衰减，前一击可以延续到下一击。",
+      "check": "点敲任一音片，连续敲两下。",
+      "basis": "program",
+      "evidence": "上方曲线同时显示这一击的音量包络。 同一音片的频谱主峰约 660 Hz。敲后 0.35–0.55 秒，短余音已归零，长余音均方根振幅仍为 0.00793。另附两段 48 kHz WAV，可试听。"
+    },
+    {
+      "id": "motion-library-flock",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "保持间距",
+        "群体与生长",
+        "飞鸟结群",
+        "鸟群",
+        "flock"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "分离、对齐、聚拢是三个独立的转向力，外观相似的队形可以有不同的内部间距。",
+      "check": "在画布内拖动加入新鸟。",
+      "basis": "program",
+      "evidence": "观察群体并拢时，相邻个体还会相隔多远。 同一路径添鸟后均为 71 只。115 步后的平均最近邻间距从 2.2 增至 26.7 像素。"
+    },
+    {
+      "id": "motion-library-flow",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "流场循迹",
+        "群体与生长",
+        "转向",
+        "风向",
+        "flow"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "限制每一步能转多少，比直接指定朝向更容易留下弧形轨迹。",
+      "check": "点击生成新的方向场。",
+      "basis": "program",
+      "evidence": "观察三角形经过急弯时怎样回到箭头方向。 同一张方向场、同一初速，第 115 步两只对应个体相距 49.8 像素。"
+    },
+    {
+      "id": "motion-library-glass",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "玻璃",
+        "玻璃碎片",
+        "碎裂",
+        "碰撞与形变",
+        "glass"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "Voronoi 单元保持拼合前的边界，碎裂后每块单独保存速度和转角。",
+      "check": "点击玻璃，裂纹与碎片从点击处散开。",
+      "basis": "program",
+      "evidence": "再次点击重新取样。 同一击点生成 18 或 60 片，两种剖分的面积总和都是 178,352 平方像素，等于原玻璃面积。"
+    },
+    {
+      "id": "motion-library-letters",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "字效",
+        "文字与声音",
+        "逐字",
+        "逐字入场",
+        "letters"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "拆字后按字符索引错开开始时间，单字时长和整句总时长可以分别推算。",
+      "check": "点击文字重新触发。",
+      "basis": "program",
+      "evidence": "观察相同的上移、淡入动作怎样随字间时差改变节奏。 四个字的最后一个完成入场的时间由 545 变为 800 毫秒。在第 250 毫秒，慢版末字的透明度仍为零。"
+    },
+    {
+      "id": "motion-library-life",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "滑翔机",
+        "细胞",
+        "细胞生长",
+        "群体与生长",
+        "life"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "同一套邻居计数规则，小小的初始形状差异会产生振荡或迁移。",
+      "check": "点击空白处种下一簇细胞。",
+      "basis": "program",
+      "evidence": "观察它原地换方向，或沿对角线迁移。 实际点种后推进四代，振荡子回到原来的格子，滑翔机整体向右下移动一格。"
+    },
+    {
+      "id": "motion-library-smoke",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "消散",
+        "烟尾",
+        "粒子与波",
+        "风吹烟雾",
+        "smoke"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "粒子寿命决定新旧交替，发射率改变同一时刻在场的粒子数量。",
+      "check": "在画面左右移动改变风向，观察烟尾弯向与烟团浓度。",
+      "basis": "program",
+      "evidence": "风向与寿命相同时，存活粒子从 80 增至 240 个。"
+    },
+    {
+      "id": "motion-library-tree",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "枝条",
+        "枝条分叉",
+        "群体与生长",
+        "递归",
+        "tree"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "缩短比例和最小枝长共同决定层数，角度控制枝冠的展开方向。",
+      "check": "在画面上左右移动改变分叉角。",
+      "basis": "program",
+      "evidence": "固定手的位置，再切换子枝长度。 同一分叉角 35.3°，绘制的枝段由 255 增至 4095。"
+    },
+    {
+      "id": "motion-library-water",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "双击点",
+        "水纹",
+        "水面涟漪",
+        "粒子与波",
+        "water"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "高度场先传播，再用高度梯度扭曲同一张底图。可分别控制投滴范围和折射强度。",
+      "check": "点击纹理投下一滴水，连续点两处，观察波前相遇后的纹样。",
+      "basis": "program",
+      "evidence": "相同的两次投滴，推进 18 步，WebGL 两种设置各改变 7,490 和 17,352 个画面像素。另实际运行了二维高度场备用版。"
+    },
+    {
+      "id": "motion-library-wave",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "波峰",
+        "波形叠加",
+        "相位",
+        "粒子与波",
+        "wave"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "每个横坐标累加各波的高度，叠加后峰谷和振幅都可能改变。",
+      "check": "拖动改变相位，看几个不同波长的波怎样叠成一道轮廓。",
+      "basis": "program",
+      "evidence": "同一相位，波形峰谷差从 49.8 增至 100.8 像素。"
+    },
+    {
+      "id": "motion-library-wood",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "年轮",
+        "旋转木纹",
+        "木纹",
+        "纹理与光",
+        "wood"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "纹理用物体表面的三维坐标采样，随物体转动。固定光照、种子和摄影机后，可以单独比较年轮参数。",
+      "check": "在木球上按住并左右拖动，从另一侧观察纹理。",
+      "basis": "program",
+      "evidence": "保持同一视角，比较年轮疏密。 同样将木球转过 1.12 弧度，光照、配色和种子相同，切换年轮参数后有 64,178 个画面像素变化。"
+    },
+    {
+      "id": "motion-study-second-camera",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "场景搭建",
+        "正交相机",
+        "透视与正交",
+        "透视相机",
+        "camera"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "比较投影时固定构图和物体尺寸。透视强调距离，正交适合结构图或保持同尺度的图形。",
+      "check": "摆放同尺寸的近远标尺，分别在透视和正交相机画面量投影高度。",
+      "basis": "program",
+      "evidence": "同视角、同尺寸，透视中近远物体竖直投影比为 1.232，正交中为 1.000。"
+    },
+    {
+      "id": "motion-study-second-coat",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "一层光滑清漆",
+        "无清漆",
+        "材质",
+        "透明清漆",
+        "coat"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "把清漆当成单独的表层。底层和清漆各保留自己的粗糙度，就能表现上釉陶瓷或涂层。",
+      "check": "固定原机位和输入，只改变方法中要比较的参数，按下面原实验所述的量或图像现象重新对照。",
+      "basis": "program",
+      "evidence": "底层粗糙度保持 0.67，加清漆后出现第二层更紧的高光。适合给瓷釉或漆面保留底色与表面反光两个调节入口。"
+    },
+    {
+      "id": "motion-study-second-color",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "按 srgb 解码",
+        "按线性数值读取",
+        "材质",
+        "贴图色彩空间",
+        "color"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "普通颜色贴图按 sRGB 解码。粗糙度、法线和位移贴图提供数值数据，通常沿用无色彩空间标记。",
+      "check": "固定输出变换，取一块已知 sRGB 色值，对比正确和错误标注后的显示读数。",
+      "basis": "program",
+      "evidence": "贴图第一色色值为 RGB (40, 76, 105)。按 sRGB 标注后，画面中能找到同值色块，误读为线性时最近像素的最大通道误差仍有 18。"
+    },
+    {
+      "id": "motion-study-second-ease",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "三次平滑",
+        "匀速",
+        "缓入缓出",
+        "运动规律",
+        "ease"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "先规定时长与两端，再用进度曲线调整节奏。适合标题入场、光点滑动，也可以将单段动作拼成一组。",
+      "check": "固定起点、终点和总时长，分别测量中途位置及瞬时速度。",
+      "basis": "program",
+      "evidence": "同从横坐标 95 出发，约 0.42 秒分别到了 212.2 和 170.7。缓起慢下来再提速，此时瞬时速度已到 325.0 像素每秒，高于匀速的 281.2。"
+    },
+    {
+      "id": "motion-study-second-glass",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "折射",
+        "无透射",
+        "材质",
+        "玻璃透射",
+        "透射",
+        "透射 0.98",
+        "glass"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "厚度和折射率会影响穿过材料的光。用眼前背景和球后物体同时观察透射。",
+      "check": "固定原机位和输入，只改变方法中要比较的参数，按下面原实验所述的量或图像现象重新对照。",
+      "basis": "program",
+      "evidence": "在球心处取同一小块，横向纹样的通道标准差由 7.1 增至 19.7。透过球体可以辨认背景条纹被扭曲的样子。"
+    },
+    {
+      "id": "motion-study-second-hierarchy",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "场景搭建",
+        "局部坐标",
+        "父子层级",
+        "转台",
+        "部件在场景根节点",
+        "部件挂在转台下",
+        "hierarchy"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "把共同运动的部件放在组内，先把位置定义在局部空间，再由父节点统筹平移和旋转。",
+      "check": "转动父节点，分别量世界坐标与子节点到父节点的相对距离。",
+      "basis": "program",
+      "evidence": "同转 0.486 弧度，根节点版本的灯珠世界坐标不变。挂到转台之下后，灯珠随转台移动了 0.712 个场景单位。"
+    },
+    {
+      "id": "motion-study-second-ik",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "双关节追踪",
+        "反向运动学",
+        "肘向上",
+        "肘向下",
+        "运动规律",
+        "骨骼",
+        "ik"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "两段长度固定，余弦定理给出两种弯曲方向。目标超出工作范围时先夹住距离，再求关节。",
+      "check": "分别把目标放在臂展内、外和内圈里，测试两种肘向，量两段长度及末端误差。",
+      "basis": "program",
+      "evidence": "两种肘向的末端都命中同一点，肘的位置相隔 131.0 像素。两段各为 111、102 像素，超过最大臂展时沿目标方向伸至边界。"
+    },
+    {
+      "id": "motion-study-second-instances",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "场景搭建",
+        "实例化网格",
+        "独立网格",
+        "重复部件",
+        "instances"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "同几何、同材质而变换不同的部件可以共用一批实例，单独调整每个部件的位置和朝向。",
+      "check": "比较同几何同材质的普通对象与实例绘制的调用数，并在同一机位比较像素。",
+      "basis": "program",
+      "evidence": "两种设置均为 96 个部件、2,306 个三角面。在此视角，绘制调用从 97 降至 2，画面没有超过阈值的像素差。"
+    },
+    {
+      "id": "motion-study-second-lag",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "分段跟随",
+        "延迟",
+        "每点相同响应",
+        "运动规律",
+        "逐段传递",
+        "飘带",
+        "lag"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "每个点追随上一个点会自然形成相位差。它适合飘带式视觉跟随，长度约束需要独立加入。",
+      "check": "固定原机位和输入，只改变方法中要比较的参数，按下面原实验所述的量或图像现象重新对照。",
+      "basis": "program",
+      "evidence": "把手拖到同一处再停 0.225 秒，各点同响应时首尾横坐标差 0 像素，逐段传递时仍差 127.9 像素。"
+    },
+    {
+      "id": "motion-study-second-lantern",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "布光",
+        "弧长加缓冲",
+        "弧长匀速",
+        "沿弧线移动的灯",
+        "灯光绑定",
+        "综合练习",
+        "lantern"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "用灰模定构图和路线，再给拱门、灯壳和底座安排不同材质。先用弧长控制位置，再用进度曲线控制起停速度。",
+      "check": "固定原机位和输入，只改变方法中要比较的参数，按下面原实验所述的量或图像现象重新对照。",
+      "basis": "program",
+      "evidence": "开始约 0.98 秒，灯走到全程的 28.8% 与 20.1%。两种节奏都在 3.4 秒到同一终点，灯光在灯组里始终离灯壳中心 0.06 个场景单位。"
+    },
+    {
+      "id": "motion-study-second-light",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "主光与补光",
+        "场景搭建",
+        "弱补光",
+        "强补光",
+        "light"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "先确定主光方向，再抬亮暗部。保留同机位和材质，便于观察补光怎样改变明暗差。",
+      "check": "固定原机位和输入，只改变方法中要比较的参数，按下面原实验所述的量或图像现象重新对照。",
+      "basis": "program",
+      "evidence": "主光强度固定 2.45，补光由 0.07 增到 1.42。同一转角的背光面出现更多冷色亮度。"
+    },
+    {
+      "id": "motion-study-second-metal",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "材质",
+        "金属度",
+        "金属度 0",
+        "金属度 1",
+        "metal"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "金属表面的反射会受基色影响。对照金属度时提供可反射的环境，固定颜色与粗糙度。",
+      "check": "固定原机位和输入，只改变方法中要比较的参数，按下面原实验所述的量或图像现象重新对照。",
+      "basis": "program",
+      "evidence": "在固定的软箱环境、基色和粗糙度下，金属度设为 1，球面反射带入更明显的铜色色调。"
+    },
+    {
+      "id": "motion-study-second-path",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "匀速",
+        "参数等步",
+        "弧长",
+        "弧长等步",
+        "曲线匀速",
+        "运动规律",
+        "path"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "贝塞尔参数与实际走过的距离不同。预先计算长度表，按距离查参数，就能保留曲线并控制速度。",
+      "check": "沿同一弯曲路径取相同数量的时间样本，比较相邻位移的最小值与最大值。",
+      "basis": "program",
+      "evidence": "按同样的 100 个时间间隔取点，曲线参数等步版的相邻位移为 3.92–16.41 像素，弧长等步版收敛到 7.728–7.748 像素。猛弯处的直线弦长仍略短于弧长。"
+    },
+    {
+      "id": "motion-study-second-pendulum",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "摆长",
+        "周期",
+        "单摆",
+        "摆长 130",
+        "摆长 205",
+        "摆长与周期",
+        "运动规律",
+        "pendulum"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "重力造成角加速度。摆长改变周期，初始角度和阻尼决定摆幅与收势。",
+      "check": "只改变摆长，在同一小初始角测量连续过零的时间间隔。",
+      "basis": "program",
+      "evidence": "重力、阻尼和初始角相同，摆长由 130 增至 205，周期由 1.98 增至 2.49 秒。"
+    },
+    {
+      "id": "motion-study-second-relief",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "位移贴图",
+        "凹凸与位移",
+        "凹凸贴图",
+        "材质",
+        "relief"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "凹凸图改变光照计算，位移图移动网格顶点。位移需要足够的网格细分才能保留纹理。",
+      "check": "固定原机位和输入，只改变方法中要比较的参数，按下面原实验所述的量或图像现象重新对照。",
+      "basis": "program",
+      "evidence": "在同一角度提取球体轮廓，使用同一张高度图的两种方式有 6,125 个像素只落在其中一个轮廓里。位移版用了 128 × 112 的球体细分。"
+    },
+    {
+      "id": "motion-study-second-rough",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "反光",
+        "材质",
+        "粗糙度 0.10",
+        "粗糙度 0.75",
+        "表面粗糙度",
+        "高光",
+        "rough"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "先固定光源尺寸，再调粗糙度。变粗会改变反射的分布与边缘清晰度。",
+      "check": "固定原机位和输入，只改变方法中要比较的参数，按下面原实验所述的量或图像现象重新对照。",
+      "basis": "program",
+      "evidence": "保持球形、颜色与灯箱，粗糙度从 0.1 加到 0.75。小的亮高光与反射轮廓变软。"
+    },
+    {
+      "id": "motion-study-second-shadow",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "关闭投影",
+        "场景搭建",
+        "开启投影",
+        "落影与接触",
+        "shadow"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "阴影需要光源允许投影、物体投影、平面收影。相机看到的投影和灯看到的范围分别设置。",
+      "check": "固定原机位和输入，只改变方法中要比较的参数，按下面原实验所述的量或图像现象重新对照。",
+      "basis": "program",
+      "evidence": "打开投影后得到 512 × 512 阴影图，两物体在平面上的落影可以辨认。"
+    },
+    {
+      "id": "motion-study-second-spring",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "临界阻尼 20",
+        "运动规律",
+        "阻尼 4",
+        "阻尼弹簧",
+        "spring"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "刚度决定拉回目标的强弱，阻尼决定速度损耗。想要保留惯性，需要保留位移和速度。",
+      "check": "保持质量、目标和刚度，改变阻尼并测最大过冲与收敛时间。",
+      "basis": "program",
+      "evidence": "目标相同。阻尼为 4 时最大过冲 195.9 像素。临界阻尼版没有过冲，约 0.83 秒时离目标 1.1 像素。这里只改变阻尼，质量取 1，刚度取 100。"
+    },
+    {
+      "id": "motion-study-second-step",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "固定 1/240 秒",
+        "固定子步",
+        "固定物理步长",
+        "帧率",
+        "按画面间隔求解",
+        "运动规律",
+        "step"
+      ],
+      "environment": "浏览器交互动画实验，在固定输入与时间点下比较。",
+      "method": "用累计时间或统一时钟驱动物理子步，渲染频率变化时仍能得到一致的状态序列。",
+      "check": "更换 30 和 120 fps 的绘制节奏，使用固定子步模拟同样时长，在相同的时间点比较位置。",
+      "basis": "program",
+      "evidence": "模拟同一段运动采用 30 和 120 fps 的更新时间。取样时两条曲线的位移差是 0.0852；统一用 240 Hz 物理子步后差值为 0。这是步长模拟对照。"
+    },
+    {
+      "id": "reference-camera-edit-shot-map",
+      "author": "ieufrrehiug",
+      "task": "video",
+      "kind": "method",
+      "topics": [
+        "运镜",
+        "推拉",
+        "分镜",
+        "参考时间码",
+        "镜头"
+      ],
+      "environment": "桌面视频制作、成片或参考对照。",
+      "method": "按参考时间码记录机位方向、俯角、推拉、主体位置、点击和变速；急转及视角切换加密取帧。录完整实机界面。先锁镜头时钟，再分别控制场内动作速度和后期特效时钟。",
+      "check": "将首剪和参考在相同时间配对查看，特查推近、绕到侧面和高俯视时主角、动作对象与固定 UI 的位置。发生遮挡先微调取景或走位。用户已认可第三版运镜。",
+      "basis": "user",
+      "evidence": "原项目第三次修改的运镜获认可，本条反馈只适用于运镜。"
+    },
+    {
+      "id": "reference-camera-film-can-substitute-for-modeled-view",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "pitfall",
+      "topics": [
+        "实体相机",
+        "视频层",
+        "模型验收",
+        "遮挡",
+        "实体模型"
+      ],
+      "environment": "网页互动场景与画面对照。",
+      "method": "单看原机位的视频分层和色差可能误验收实体场景。用同一模型从新的机位渲染，检查衣料与人物的几何和遮挡。",
+      "check": "对需要实体的任务，复查和验收切换到真实三维相机及另一机位，重新检查人物衣料和模型遮挡。",
+      "basis": "user",
+      "evidence": "仅在原机位比对的初版经过复看被退回，实体模型换角度后的质量仍不足。"
+    },
+    {
+      "id": "reference-native-color-player-check",
+      "author": "ieufrrehiug",
+      "task": "video",
+      "kind": "method",
+      "topics": [
+        "播放器",
+        "偏色",
+        "色度",
+        "导出",
+        "MP4",
+        "像素对照"
+      ],
+      "environment": "桌面视频制作、成片或参考对照。",
+      "method": "先把原片和交付 MP4 放进同一播放器，在同一时刻截完整视频表面。RGB 母版可能在软件解码时逐像素匹配而在播放器中偏粉。需要逐帧完全还原时，从已核对的画布母版和测得的色度转换差值导出原生 4:2:0 并作无损编码。",
+      "check": "分别核对原生亮度和色度平面、画面时间戳、解码音轨；在播放器中多时刻截屏作逐像素比较，并实播检查丢帧。",
+      "basis": "frames",
+      "evidence": "原项目遇到解码对照与播放器观感不一致，记录了同播放器截帧和色度平面对照。"
+    },
+    {
+      "id": "terraces-seasonal-foliage",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "庭院",
+        "四季",
+        "落叶",
+        "季节切换",
+        "foliage"
+      ],
+      "environment": "网页互动场景与画面对照。",
+      "method": "将露地花、叶、树枝分别分组，使花期、落叶和冬季枝条可各自变化。降雪影响露台和庭院，雨天有水洼，入夜点灯。用相同机位拍摄不同季节，可发现切换后遗留的花朵。",
+      "check": "在同一庭院切换春晴和冬雪并对比，核对树冠和盆花，再切雨看水洼、切夜看廊灯。",
+      "basis": "frames",
+      "evidence": "留有同机位季节和昼夜对照图，可以逐处核对露台上的花叶与积雪。"
+    },
+    {
+      "id": "waterfront-berthing",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "渡船",
+        "栈桥",
+        "靠泊",
+        "码头",
+        "ferry"
+      ],
+      "environment": "网页互动场景与画面对照。",
+      "method": "从栈桥按行人眼高实走，保留水边界和靠泊净距。用渐入渐出的行程把渡船驶往泊位，靠妥才开放离岸动作；为到站的船、船钟和码头看船机位分别留空间。",
+      "check": "在可交付的离线文件里走上栈桥，用实际控件看船进港、停靠及再次离岸。沿平台侧边连续行走，确认水域挡住角色且靠泊前后的船体位置确实变化。",
+      "basis": "program",
+      "evidence": "原项目保存了从走上栈桥、触发靠泊到再次离岸的操作检查。"
+    },
+    {
+      "id": "wet-surface-after-rain",
+      "author": "ieufrrehiug",
+      "task": "scene",
+      "kind": "method",
+      "topics": [
+        "雨后",
+        "水洼",
+        "雨停",
+        "湿路",
+        "wet",
+        "pavement"
+      ],
+      "environment": "网页互动场景与画面对照。",
+      "method": "把正在降雨、留在地面的水膜和行进车轮或脚步带起的水分开。用粗糙度和局部水膜分布区分石材、车辙和积水，灯牌在浅积水里清晰，在粗面断开。雨停后停掉空中雨线和连续雨床，按位置保留湿胎和檐下零星水滴。",
+      "check": "在同一时刻同一街角实拍晴空和雨后，核对积水和橱窗反射在雨停后仍可见，换角度观察边缘。若可发声，用真实声音开关和最终音频输出验证雨床、檐滴及室内外差异。",
+      "basis": "frames",
+      "evidence": "原项目留有晴天和雨后同机位画面，可核对雨停后仍存在的局部积水。"
+    }
+  ]
+}
