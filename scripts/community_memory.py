@@ -1,5 +1,6 @@
 """Offline exchange of public experience cards. The personal store is never synchronized."""
 import argparse
+import base64
 from contextlib import closing
 import hashlib
 import json
@@ -8,6 +9,7 @@ import re
 import sqlite3
 import sys
 import unicodedata
+from urllib.request import Request, urlopen
 
 from memory_paths import default_data
 
@@ -15,6 +17,12 @@ from memory_paths import default_data
 TASKS = ("analysis", "video", "web-code", "scene", "tutorial", "install", "reverse")
 BASES = ("program", "frames", "listening", "user", "manual")
 USAGE = "commercial-use-requires-separate-authorization"
+OWNER = "ieufrrehiug"
+OWNER_ID = 215894027
+REPO = OWNER + "/watch-and-do"
+PROMPT = ("你愿意把做项目时验证过的经验分享给 watch-and-do 社区吗？"
+          "可以选「愿意，每次先给我看」或「只在本机使用」。只分享你确认过的经验卡，"
+          "两种选择都能使用公共经验，以后也能改。")
 MAX_BYTES = 4 * 1024 * 1024
 CARD = {"id", "author", "task", "kind", "topics", "environment", "method", "check", "basis", "evidence"}
 REVIEW = {"format", "card", "card_sha256", "reviewer", "environment", "outcome", "basis", "evidence"}
@@ -90,8 +98,9 @@ def reviewed(data):
 
 
 def release(data):
-    fields(data, PACK)
-    require(data["format"] == "watch-and-do.pack.v1" and data["usage"] == USAGE, "Unknown format or usage terms")
+    official = data.get("format") == "watch-and-do.pack.v2" if isinstance(data, dict) else False
+    fields(data, PACK | {"approvals"} if official else PACK)
+    require(data["format"] in ("watch-and-do.pack.v1", "watch-and-do.pack.v2") and data["usage"] == USAGE, "Unknown format or usage terms")
     require(type(data["version"]) is int and 0 < data["version"] < 2**63, "Version must be a positive integer")
     handle(data["maintainer"])
     require(isinstance(data["reviews"], list) and len(data["reviews"]) <= 2000, "Invalid release size")
@@ -105,7 +114,110 @@ def release(data):
         witness = (key, note["reviewer"].casefold())
         require(witness not in witnesses, "Duplicate review for one card")
         witnesses.add(witness)
+    if official:
+        require(data["maintainer"] == OWNER and isinstance(data["approvals"], dict)
+                and set(data["approvals"]) == {digest(n) for n in data["reviews"]}, "Missing official approval receipts")
     return data
+
+
+def github(resource):
+    req = Request("https://api.github.com/repos/" + REPO + "/" + resource,
+                  headers={"Accept": "application/vnd.github+json", "User-Agent": "watch-and-do-review"})
+    with urlopen(req, timeout=12) as response:
+        body = response.read(MAX_BYTES+1)
+    require(len(body) <= MAX_BYTES, "GitHub record too large")
+    return json.loads(body)
+
+
+def official_json(path, fetch):
+    obj = fetch("contents/" + path + "?ref=main")
+    require(obj.get("encoding") == "base64" and isinstance(obj.get("content"), str),
+            "Official repository file unavailable")
+    return json.loads(base64.b64decode(obj["content"]).decode("utf-8-sig"))
+
+
+def posted(issue, data, login):
+    require("pull_request" not in issue and issue["user"]["type"] == "User"
+            and issue["user"]["login"].casefold() == login.casefold(), "GitHub submission author mismatch")
+    blocks = re.findall(r"^```json\s*\n(.*?)\n```\s*$", issue["body"].replace("\r\n", "\n"), re.M | re.S)
+    require(len(blocks) == 1 and digest(json.loads(blocks[0])) == digest(data), "GitHub submission differs from reviewed data")
+
+
+def verify_official(pack, fetch=None):
+    """Read public records only; no credentials, attachments or contributed code are run."""
+    fetch = fetch or github
+    cache = {}
+    def get(resource):
+        if resource not in cache:
+            cache[resource] = fetch(resource)
+        return cache[resource]
+    for note in pack["reviews"]:
+        fingerprint = digest(note)
+        receipt = pack["approvals"][fingerprint]
+        require(isinstance(receipt, str) and re.fullmatch(r"[1-9][0-9]{0,11}:[1-9][0-9]{0,17}", receipt), "Invalid issue:comment receipt")
+        number, comment_id = receipt.split(":")
+        issue = get("issues/" + number)
+        posted(issue, note, note["reviewer"])
+        comment = get("issues/comments/" + comment_id)
+        require(comment.get("issue_url") == "https://api.github.com/repos/" + REPO + "/issues/" + number
+                and comment["user"]["id"] == OWNER_ID and comment["user"]["type"] == "User",
+                "Approval must come from the repository owner on the reproduction issue")
+        command = re.fullmatch(r"watch-and-do approve ([0-9a-f]{64}) (seed|[1-9][0-9]{0,11}) (https://[^\s]+)",
+                               comment["body"].strip())
+        require(command and command[1] == fingerprint, "Missing owner approval of exact review and evidence link")
+        item = note["card"]
+        if command[2] == "seed":
+            seed = official_json("seeds/cards.json", get)
+            require(any(digest(c) == digest(item) for c in seed["cards"]), "Referenced seed differs")
+            author_id = OWNER_ID
+        else:
+            original = get("issues/" + command[2])
+            posted(original, item, item["author"])
+            author_id = original["user"]["id"]
+        require(author_id != issue["user"]["id"], "Independent GitHub account required")
+
+
+def sharing(path, setting=None, begin=False):
+    if not (begin or setting or path.is_file()):
+        return {"choice": "new", "ask_now": False}
+    with closing(writable(path)) as db, db:
+        db.execute("BEGIN IMMEDIATE")
+        db.execute("CREATE TABLE IF NOT EXISTS sharing_choice (slot INTEGER PRIMARY KEY CHECK(slot=1), choice TEXT NOT NULL)")
+        row = db.execute("SELECT choice FROM sharing_choice WHERE slot=1").fetchone()
+        choice = row[0] if row else "new"
+        ask = begin and choice == "new"
+        if setting or ask:
+            choice = setting or "invited"
+            db.execute("INSERT OR REPLACE INTO sharing_choice VALUES(1,?)", (choice,))
+            db.execute("CREATE TABLE IF NOT EXISTS pending_share (slot INTEGER PRIMARY KEY CHECK(slot=1), digest TEXT NOT NULL)")
+            db.execute("DELETE FROM pending_share")
+    result = {"choice": choice, "ask_now": ask}
+    if ask:
+        result["question"] = PROMPT
+    return result
+
+
+def preview_share(path, data, confirmation):
+    require(path.is_file(), "Sharing is off; keep working locally")
+    is_review = isinstance(data, dict) and data.get("format") == "watch-and-do.review.v1"
+    if is_review:
+        reviewed(data)
+    else:
+        card(data)
+    sha = digest(data)
+    with closing(sqlite3.connect(path, timeout=10)) as db, db:
+        db.execute("BEGIN IMMEDIATE")
+        require(db.execute("SELECT 1 FROM sqlite_master WHERE name='sharing_choice'").fetchone()
+                and db.execute("SELECT 1 FROM sharing_choice WHERE slot=1 AND choice='review'").fetchone(),
+                "Sharing is off; keep working locally")
+        if confirmation is None:
+            db.execute("INSERT OR REPLACE INTO pending_share VALUES(1,?)", (sha,))
+        else:
+            require(confirmation == sha and db.execute("DELETE FROM pending_share WHERE slot=1 AND digest=?", (sha,)).rowcount == 1,
+                    "Content or sharing choice changed; show a new preview")
+    return {"payload": data, "sha256": sha, "ready": confirmation is not None,
+            "destination": "https://github.com/" + REPO + "/issues/new/choose",
+            "template": "报告复现结果" if is_review else "贡献一条经验"}
 
 
 def read(path):
@@ -135,6 +247,11 @@ def writable(path):
 
 def install(path, pack):
     release(pack)
+    if pack["maintainer"].casefold() == OWNER:
+        require(pack["format"] == "watch-and-do.pack.v2", "Official community packs require GitHub approval receipts")
+        published = official_json(f"community-packs/v{pack['version']}.json", github)
+        require(digest(published) == digest(pack), "Pack differs from the official published version")
+        verify_official(pack)
     identity = digest(pack)
     with closing(writable(path)) as db, db:
         db.execute("BEGIN IMMEDIATE")
@@ -263,12 +380,22 @@ def main():
     make.add_argument("--version", type=int, required=True)
     make.add_argument("--maintainer", required=True)
     make.add_argument("--review", type=Path, action="append", default=[])
+    make.add_argument("--approval", action="append", default=[], metavar="ISSUE:COMMENT",
+                      help="Owner approval on each GitHub reproduction issue, in --review order")
     make.add_argument("--empty", action="store_true", help="Intentionally withdraw all cards")
     for sub in (draft, review, make):
         sub.add_argument("--out", type=Path, required=True)
     take = commands.add_parser("community-install")
     take.add_argument("--input", type=Path, required=True)
     take.add_argument("--sha256", help="Compare exact file bytes to a digest from the trusted release")
+    take.add_argument("--allow-other-maintainer", action="store_true", help="Opt in to an unofficial pack from a maintainer you trust")
+    share = commands.add_parser("community-sharing", help="Read or update the local sharing choice")
+    choice = share.add_mutually_exclusive_group()
+    choice.add_argument("--begin", action="store_true", help="Ask once on first use")
+    choice.add_argument("--set", dest="setting", choices=("review", "private"))
+    send = commands.add_parser("community-share-preview", help="Prepare a public issue for explicit item-by-item approval")
+    send.add_argument("--input", type=Path, required=True)
+    send.add_argument("--confirmed-sha256", help="Use only after user approved this exact preview")
     find = commands.add_parser("community-find")
     find.add_argument("--brief", required=True)
     find.add_argument("--task", choices=TASKS, required=True)
@@ -290,16 +417,34 @@ def main():
                     reviewer=args.reviewer, environment=args.environment, outcome=args.outcome,
                     basis=args.basis, evidence=args.evidence)
         result = export(args.out, reviewed(note))
+        result["review_sha256"] = digest(note)
     elif args.command == "community-release":
         require(bool(args.review) != args.empty, "Supply --review files, or explicitly choose --empty")
         notes = [reviewed(read(path)[0]) for path in args.review]
+        official = args.maintainer.casefold() == OWNER
+        if official:
+            require(len(notes) == len(args.approval), "Each official review needs --approval ISSUE:COMMENT")
+            approvals = {digest(n): ref for n, ref in zip(notes, args.approval)}
+        else:
+            require(not args.approval, "GitHub approval receipts are for the official repository")
         notes.sort(key=lambda n: (n["card"]["id"], n["reviewer"].casefold()))
         pack = dict(format="watch-and-do.pack.v1", version=args.version, maintainer=args.maintainer, usage=USAGE, reviews=notes)
+        if official:
+            pack.update(format="watch-and-do.pack.v2", maintainer=OWNER, approvals=approvals)
+            verify_official(release(pack))
         result = export(args.out, release(pack))
     elif args.command == "community-install":
         data, sha = read(args.input)
         require(args.sha256 is None or sha == args.sha256.lower(), "Release file SHA-256 mismatch")
+        release(data)
+        require(args.allow_other_maintainer or data["maintainer"].casefold() == OWNER,
+                "Unofficial pack: choose --allow-other-maintainer only for a source you trust")
         result = install(db, data)
+    elif args.command == "community-sharing":
+        result = sharing(db, args.setting, args.begin)
+    elif args.command == "community-share-preview":
+        data, _ = read(args.input)
+        result = preview_share(db, data, args.confirmed_sha256)
     elif args.command == "community-find":
         if args.task == "scene":
             from scene_memory import lessons, scene_context
