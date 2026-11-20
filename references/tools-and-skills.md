@@ -4,13 +4,17 @@
 
 ```json
 {
-  "software": [{"name": "GIMP", "version": "3.0"}],
-  "skills": "none",
-  "capabilities": ["subject-cutout"]
+  "software": [{"name": "剪映专业版", "version": "unknown"}],
+  "skills": ["jianying-local"],
+  "capabilities": ["subtitle-placement"],
+  "uses": [
+    {"kind": "software", "name": "剪映专业版", "purpose": "重开草稿并逐帧检查字幕位置。"},
+    {"kind": "skill", "name": "jianying-local", "purpose": "建立可编辑的字幕轨并设置入点与出点。"}
+  ]
 }
 ```
 
-这是“手工抠出一张原图”的填写示例。软件版本应从本次运行记录或软件“关于”页面核对。技能写实际名称列表，例如 `["after-effects"]`。明确未使用写 `"none"`，无法从历史材料确定写 `"unknown"`。软件已知但版本不详，保留软件名并将 `version` 写成 `"unknown"`。能力可以写成简短的任务词；内置替代路线识别 `subject-cutout`（静态图抠像）、`video-matte`（视频蒙版）、`window-capture`（录窗）和 `browser-rendering`（浏览器渲染）。
+这是剪映字幕项目的格式示例。软件版本从本次运行记录或实际使用的应用核对；版本不详时保留软件名并将 `version` 填为 `"unknown"`。技能写实际调用的名称，例如 `["jianying-local"]`。明确未使用写 `"none"`，无法从历史材料确定写 `"unknown"`。新的项目结项在 `uses` 中给每个具名工具写一个用途，名称与上面一致；同一个工具做了几步可合在一句。用途将进入公开表单，请用可分享的操作描述，个人目录、客户名、工程名和日志另存本机。旧卡可省略 `uses`。能力填简短任务词；内置替代路线识别 `subject-cutout`（静态图抠像）、`video-matte`（视频蒙版）、`window-capture`（录窗）和 `browser-rendering`（浏览器渲染）。
 
 ## 查到经验后
 
@@ -18,6 +22,7 @@
 python scripts/community_memory.py community-preflight --installed-id ae-gdigrab-black-compositor
 python scripts/community_memory.py community-preflight --card my-card.json --inventory local-inventory.json
 python scripts/community_memory.py community-preflight --scene-id my-personal-lesson
+python scripts/community_memory.py community-preflight --capture-id CANDIDATE_ID
 python scripts/community_memory.py community-preflight --capability subject-cutout --check "缩放到 100%，在黑底白底检查发丝、边缘光晕、透明区域和主体完整性" --basis frames
 ```
 
@@ -40,7 +45,7 @@ Windows 上的剪映专业版和 Adobe After Effects 还会查询当前用户及
 
 ## 记录新的证据
 
-写公开卡时把上述对象放在卡片的 `tools` 键。个人 `scene-learn` 清单支持同一键。对旧卡复现时可用 `community-review --tools my-tools.json` 指定仅含该对象的 JSON 文件，配合原有的 `--card`、`--reviewer`、`--environment`、`--outcome`、`--basis`、`--evidence`、`--out` 参数。复现所用的替代工具填在复现记录，原作者的卡保留原样。
+视频、教程等项目通过 `capture --tools project-tools.json` 在结项时记录软件和技能。个人场景在 `scene-learn` 清单的 `tools` 键填写同一对象。生成公开卡时，分别用 `community-draft --from-capture CANDIDATE_ID` 或 `community-draft --from-scene` 配合 `--input` 和 `--out` 从个人记录带出工具。表单可省去整个 `tools`，填写了冲突值则需先核对。直接撰写公开卡时，将对象放入卡片的 `tools` 键。独立复现用 `community-review --tools my-tools.json` 指定复现者自己的软件、版本、技能和用途，配合 `--card`、`--reviewer`、`--environment`、`--outcome`、`--basis`、`--evidence`、`--out` 参数。详细步骤见[项目结项和经验复用](learning-and-reuse.md)。
 
 旧卡仍按原始内容核对 SHA-256。45 条随包卡的历史工具补注来自原项目的实测脚本、制作记录、实际依赖或已有卡片，按原卡内容摘要单独匹配。检索结果中的 `tools_source` 给出出处类型；无法对应的旧卡显示 `unrecorded`。软件与技能记录不齐全时继续保留未知项。
 

@@ -8,10 +8,29 @@
 
 ```bash
 python scripts/experience.py find --task-type video --app jianying --version 11.8.0.14778 --query "gain"
-python scripts/experience.py capture --kind success --summary "Native gain held after reopen" --evidence ./work/verification.md
+python scripts/experience.py find-captures --task-type video --query "剪映"
 ```
 
-find 最多返回三项已经验证且内容摘要仍匹配的配方。用应用版本、正确工程、前台窗口、DPI、布局、可见控件与源文件再核对。没有匹配项时，在目标应用里完成当前工作，写下实际状态和检查结果。capture 保存候选信号；失败和回退也可以记录。详细截图和动作轨迹留在自己的工程或个人数据目录内。
+find 最多返回三项已经验证且内容摘要仍匹配的配方。用应用版本、正确工程、前台窗口、DPI、布局、可见控件与源文件再核对。find-captures 返回最近最多十条匹配的个人项目记录，包括失败和回退。详细截图和动作轨迹留在自己的工程或个人数据目录内。
+
+## 项目做完怎样留一条可复用经验
+
+以剪映视频项目为例，在工程内保留一份验收记录，写明实际检查了哪一段、看见或听见什么。按[工具记录格式](tools-and-skills.md)填写 `project-tools.json`，每项用途只写实际操作。下面用的是示例结论，运行时换成这一次的观察。原生保存重开后查看画面属于 frames，查草稿数据属于 program，真实试听才用 listening。
+
+```bash
+python scripts/experience.py capture --task-type video --kind success --basis frames --summary "重开草稿后字幕仍位于画面下方" --check "重开成片工程，在两个指定时刻逐帧检查字幕位置" --tools ./work/project-tools.json --evidence ./work/verification.md
+```
+
+命令把本机证据文件位置、SHA-256 和工具记录连同结论写入个人库，返回 `candidate`。未通过填 `--kind failure`，回退填 `rollback`。只在本机使用时，结项到此即可。下次用 `find-captures` 找回记录，再把 ID 传给 `community-preflight --capture-id` 核对环境。旧的三参数 `capture --kind … --summary … --evidence …` 仍可记录自由文本候选信号。
+
+分享时，先确认署名、公开权利与现有分享选择。参照[公开卡示例](community-card.example.json)单写一份脱敏表单，换成实际 task、kind、topics、method、check、basis、evidence、environment、id 和 author。省去 `tools`，让下面的命令从该次结项记录取回工具；有冲突会提示核对。把 `CANDIDATE_ID` 换成刚返回的值。
+
+```bash
+python scripts/community_memory.py community-draft --from-capture CANDIDATE_ID --input ./work/public-form.json --out ./work/card.json
+python scripts/community_memory.py community-share-preview --input ./work/card.json
+```
+
+导出时会重验本地证据摘要，公开正文只含作者填写的公开表单和工具记录。逐条批准模式可用 `community-queue-review --all` 在本机看完整待审稿。独立复现者另记自己使用的工具和验收结果，维护者审核入包后，其他设备可用 `community-find` 检索，按 `community-preflight --installed-id` 核对其本机条件。详见[社区投稿和复现](community-learning.md)。
 
 ## 剪映专业版桌面配方
 

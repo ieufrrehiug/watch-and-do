@@ -12,9 +12,11 @@ def unknown_tools():
     return {"software": "unknown", "skills": "unknown", "capabilities": []}
 
 
-def validate_tools(tools, check_text):
-    if not isinstance(tools, dict) or set(tools) != {"software", "skills", "capabilities"}:
+def validate_tools(tools, check_text, *, require_uses=False):
+    required = {"software", "skills", "capabilities"}
+    if not isinstance(tools, dict) or not required <= set(tools) <= required | {"uses"}:
         raise ValueError("tools requires software, skills and capabilities")
+    names = set()
     for group in ("software", "skills", "capabilities"):
         rows = tools[group]
         if group != "capabilities" and rows in ("none", "unknown"):
@@ -36,6 +38,24 @@ def validate_tools(tools, check_text):
             if name.casefold() in seen or name.casefold() in ("none", "unknown"):
                 raise ValueError(f"Duplicate or reserved {group} name")
             seen.add(name.casefold())
+            if group in ("software", "skills"):
+                names.add(("skill" if group == "skills" else "software", name))
+    uses = tools.get("uses", [])
+    if not isinstance(uses, list) or len(uses) > 48:
+        raise ValueError("uses must be a list with at most one entry per tool")
+    described = set()
+    for use in uses:
+        if not isinstance(use, dict) or set(use) != {"kind", "name", "purpose"}:
+            raise ValueError("Each use requires kind, name and purpose")
+        kind, name = use["kind"], use["name"]
+        if kind not in ("software", "skill") or not isinstance(name, str) or (kind, name) not in names:
+            raise ValueError("Each use must refer to a recorded software or skill name")
+        if (kind, name) in described:
+            raise ValueError("Duplicate use for the same tool")
+        check_text(use["purpose"], "tools.uses.purpose", 300)
+        described.add((kind, name))
+    if require_uses and described != names:
+        raise ValueError("Record what each named software and skill did in tools.uses")
     return tools
 
 
@@ -288,6 +308,7 @@ def preflight(tools, check, basis, inventory=(), roots=None):
     incomplete = False
     original_tools = set()
     missing_skill = False
+    purposes = {(u["kind"], u["name"]): u["purpose"] for u in tools.get("uses", [])}
     for group, kind in (("software", "software"), ("skills", "skill")):
         rows = tools[group]
         if isinstance(rows, str):
@@ -296,6 +317,8 @@ def preflight(tools, check, basis, inventory=(), roots=None):
         for entry in rows:
             name = entry["name"] if kind == "software" else entry
             observed = observe(kind, name, entries, roots, entry["version"] if kind == "software" else None)
+            if (kind, name) in purposes:
+                observed["used_for"] = purposes[kind, name]
             original_tools.add((kind, name.casefold()))
             if kind == "software":
                 wanted, found = entry["version"], observed.get("version", "unknown")

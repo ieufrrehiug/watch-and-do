@@ -9,6 +9,7 @@ Include:
 - **Source and evidence**: exact URL or file, relevant time ranges, cache paths and modality limits.
 - **Goal and decisions**: chosen route, confirmed requirements and changes, implementation assumptions, authorized destination.
 - **State and outputs**: current stage, real workspace, artifact paths, version and launch or repeat command.
+- **Tools actually used**: record the software and CLI versions, the skills used, and the step each performed. When a step needed no separate skill, record that explicitly. Distinguish proposed substitutes and unknown versions. Preserve these facts in the local project experience and its public draft.
 - **Checks and findings**: expected result, method and observed result; record fixes, failed attempts or rollbacks that affect the next decision.
 - **Next**: one concrete action, blocked prerequisites and any hands-on checks still needed.
 

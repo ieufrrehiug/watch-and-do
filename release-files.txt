@@ -41,10 +41,13 @@ scripts/package_skill.py
 scripts/scene_archive.py
 scripts/scene_memory.py
 scripts/verify_video.py
+scripts/watch_video.py
 seeds/cards.json
 seeds/tool-profiles.json
 tests/test_distribution.py
+tests/test_project_tools.py
 tests/test_public.py
 tests/test_queue.py
 tests/test_recipes.py
 tests/test_tools.py
+tests/test_watch_video.py

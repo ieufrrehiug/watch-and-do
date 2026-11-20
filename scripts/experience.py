@@ -289,11 +289,65 @@ def catalog(data):
     return db
 
 
-def capture(kind, summary, evidence, data=DATA):
+def capture(kind, summary, evidence, data=DATA, *, task_type=None, basis=None, check=None, tools=None):
+    details = None
+    if any(value is not None for value in (task_type, basis, check, tools)):
+        from community_memory import BASES, public_text
+        from community_tools import validate_tools
+        from scene_archive import file_hash
+        if task_type not in TASK_TYPES or basis not in BASES or not isinstance(check, str) or not check.strip():
+            raise ValueError("Project captures require --task-type, --basis, --check and --tools")
+        if kind not in ("success", "failure", "rollback"):
+            raise ValueError("Use success, failure or rollback for a project capture")
+        if not summary.strip():
+            raise ValueError("A project capture needs an observed outcome in --summary")
+        validate_tools(tools, public_text, require_uses=True)
+        path = Path(evidence).expanduser().resolve()
+        if not path.is_file() or not path.stat().st_size:
+            raise ValueError("A project capture needs a nonempty local evidence file")
+        evidence = str(path)
+        details = dict(task=task_type, basis=basis, check=redact(check.strip()), tools=tools,
+                       evidence_sha256=file_hash(path))
     candidate = "cand-"+uuid.uuid4().hex
     with closing(catalog(data)) as db, db:
         db.execute("INSERT INTO signals VALUES (?, ?, ?, ?)", (candidate, kind, redact(summary), redact(evidence)))
+        if details is not None:
+            # Keep the old four-column signals table writable by existing recipe runtimes.
+            db.execute("CREATE TABLE IF NOT EXISTS project_captures (candidate TEXT PRIMARY KEY, details TEXT NOT NULL)")
+            db.execute("INSERT INTO project_captures VALUES (?,?)", (candidate, json.dumps(details, ensure_ascii=False)))
     return {"status":"candidate", "candidate":candidate}
+
+
+def project_captures(data, *, candidate=None, task=None, query="", limit=10):
+    from community_tools import tool_terms
+    path = Path(data) / "learning/local-recipes.sqlite3"
+    if not path.is_file():
+        return []
+    with closing(sqlite3.connect(path.resolve().as_uri() + "?mode=ro", uri=True)) as db:
+        if not db.execute("SELECT 1 FROM sqlite_master WHERE name='project_captures'").fetchone():
+            return []
+        sql = ("SELECT s.candidate,s.kind,s.summary,s.evidence,p.details FROM project_captures p "
+               "JOIN signals s ON s.candidate=p.candidate")
+        if candidate is not None:
+            sql += " WHERE p.candidate=?"
+        rows = db.execute(sql + " ORDER BY p.rowid DESC", (candidate,) if candidate is not None else ())
+        results = []
+        terms = query.casefold().split()
+        for key, kind, summary, evidence, encoded in rows:
+            details = json.loads(encoded)
+            if task is not None and details["task"] != task:
+                continue
+            tools = details["tools"]
+            words = [summary, details["check"], *tool_terms(tools)]
+            words.extend(use["purpose"] for use in tools.get("uses", []))
+            if isinstance(tools["software"], list):
+                words.extend(software["version"] for software in tools["software"])
+            searchable = " ".join(words).casefold()
+            if all(term in searchable for term in terms):
+                results.append(dict(candidate=key, kind=kind, summary=summary, evidence=evidence, **details))
+                if len(results) == limit:
+                    break
+    return results
 
 
 def find_recipes(task_type, app=None, version=None, query="", data=DATA, limit=3):
@@ -374,17 +428,28 @@ def main():
     sub = p.add_subparsers(dest='command', required=True)
     f = sub.add_parser('find'); f.add_argument('--task-type', required=True, choices=TASK_TYPES)
     f.add_argument('--app'); f.add_argument('--version'); f.add_argument('--query', default='')
+    search = sub.add_parser('find-captures', help='Find personal project outcomes and the tools actually used')
+    search.add_argument('--task-type', required=True, choices=TASK_TYPES)
+    search.add_argument('--query', default='')
     v = sub.add_parser('verify'); v.add_argument('--recipe', required=True); v.add_argument('--runs', nargs='+', required=True)
     v.add_argument('--quality'); v.add_argument('--negative-tests')
     c = sub.add_parser('capture'); c.add_argument('--kind', default='success'); c.add_argument('--summary', required=True)
     c.add_argument('--evidence', required=True)
+    c.add_argument('--task-type', choices=TASK_TYPES)
+    c.add_argument('--basis', help='program, frames, listening, user or manual')
+    c.add_argument('--check', help='Acceptance check actually performed')
+    c.add_argument('--tools', type=Path, help='JSON of the tools used and their roles on this project')
     final=sub.add_parser('finalize');final.add_argument('--recipe',required=True)
     final.add_argument('--runs',nargs='+',required=True);final.add_argument('--negative-tests',required=True)
     final.add_argument('--quality')
     rollback=sub.add_parser('deactivate');rollback.add_argument('--recipe',required=True);rollback.add_argument('--reason',required=True)
     args = p.parse_args()
     if args.command == 'find': result = find_recipes(args.task_type,args.app,args.version,args.query,Path(args.data))
-    elif args.command == 'capture': result = capture(args.kind, args.summary, args.evidence, Path(args.data))
+    elif args.command == 'find-captures':
+        result = project_captures(args.data, task=args.task_type, query=args.query)
+    elif args.command == 'capture':
+        result = capture(args.kind, args.summary, args.evidence, Path(args.data), task_type=args.task_type,
+                         basis=args.basis, check=args.check, tools=read(args.tools) if args.tools else None)
     elif args.command == 'finalize':result=finalize_recipe(args.recipe,args.runs,args.negative_tests,args.quality,Path(args.data))
     elif args.command == 'deactivate':result=deactivate_recipe(read(args.recipe),args.reason,Path(args.data))
     else:
